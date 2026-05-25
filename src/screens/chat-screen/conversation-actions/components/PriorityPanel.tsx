@@ -22,7 +22,9 @@ const priorityAvatar = (priority: ConversationPriority) => {
 };
 
 const PriorityPanel = ({ priority, onPress }: PriorityPanelProps) => {
-  const priorityName = priority ? priority : i18n.t('CONVERSATION.ACTIONS.PRIORITY.EMPTY');
+  const priorityName = priority
+    ? i18n.t(`CONVERSATION.PRIORITY.OPTIONS.${priority.toUpperCase()}`, { defaultValue: priority })
+    : i18n.t('CONVERSATION.ACTIONS.PRIORITY.EMPTY');
   return (
     <Pressable
       onPress={onPress}
@@ -35,7 +37,7 @@ const PriorityPanel = ({ priority, onPress }: PriorityPanelProps) => {
           )}>
           <Animated.Text
             style={tailwind.style(
-              'text-base font-inter-420-20 leading-[22.4px] tracking-[0.16px] text-gray-950 capitalize',
+              'text-base font-inter-420-20 leading-[22.4px] tracking-[0.16px] text-gray-950',
             )}>
             {priorityName}
           </Animated.Text>

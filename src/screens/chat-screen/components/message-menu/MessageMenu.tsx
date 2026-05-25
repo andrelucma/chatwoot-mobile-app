@@ -126,7 +126,7 @@ export const MessageMenu = (props: PropsWithChildren<MessageMenuProps>) => {
           snapPoints={[menuOptions.length * 44 + 4 + 37]}
           onDismiss={handleOnDismiss}>
           <BottomSheetWrapper>
-            <BottomSheetHeader headerText="Select action" />
+            <BottomSheetHeader headerText="Selecionar ação" />
             <Animated.View style={tailwind.style('py-1 pl-3')}>
               {menuOptions?.map((option, index) => {
                 return (

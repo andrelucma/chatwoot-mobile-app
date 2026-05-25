@@ -1,6 +1,7 @@
 import type { RootState } from '@/store';
 import { teamAdapter } from './teamSlice';
 import { createSelector } from '@reduxjs/toolkit';
+import i18n from '@/i18n';
 
 export const selectTeamsState = (state: RootState) => state.teams;
 
@@ -14,7 +15,7 @@ export const filterTeams = createSelector(
     const teamsList = [
       {
         id: '0',
-        name: 'None',
+        name: i18n.t('CONVERSATION.NONE'),
         description: null,
         allowAutoAssign: false,
         accountId: 0,

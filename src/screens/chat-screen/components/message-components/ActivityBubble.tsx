@@ -9,6 +9,18 @@ type ActivityBubbleProps = {
   timeStamp: number;
 };
 
+const translateActivityText = (text: string) => {
+  return text
+    .replace(/\blow\b/gi, 'baixa')
+    .replace(/\bmedium\b/gi, 'média')
+    .replace(/\bhigh\b/gi, 'alta')
+    .replace(/\burgent\b/gi, 'urgente')
+    .replace(/\bopen\b/gi, 'aberta')
+    .replace(/\bresolved\b/gi, 'resolvida')
+    .replace(/\bpending\b/gi, 'pendente')
+    .replace(/\bsnoozed\b/gi, 'adiada');
+};
+
 export const ActivityBubble = (props: ActivityBubbleProps) => {
   const { text, timeStamp } = props;
   return (
@@ -17,7 +29,7 @@ export const ActivityBubble = (props: ActivityBubbleProps) => {
         style={tailwind.style(
           'text-cxs font-inter-420-20 tracking-[0.32px] leading-[18px] text-blackA-A11 text-center',
         )}>
-        {text} {unixTimestampToReadableTime(timeStamp)}
+        {translateActivityText(text)} {unixTimestampToReadableTime(timeStamp)}
       </Animated.Text>
     </Animated.View>
   );
