@@ -178,7 +178,7 @@ export const LANGUAGES = {
   nl: 'Dutch',
   no: 'Norwegian',
   pl: 'Polish',
-  pt_BR: 'Portuguese (Brazil)',
+  pt_BR: 'Português (Brasil)',
   pt: 'Portuguese (Portugal)',
   ro: 'Romanian',
   ru: 'Russian',
