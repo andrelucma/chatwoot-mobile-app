@@ -1,5 +1,6 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
+import { useColorScheme } from 'react-native';
 import { Avatar } from '@/components-next';
 import { tailwind } from '@/theme';
 import type { NotificationType } from '@/types/Notification';
@@ -47,6 +48,7 @@ export const InboxItemComponent = (props: InboxItemProps) => {
     notificationType,
   } = props;
 
+  useColorScheme();
   const hasAssignee = assignee?.name || assignee?.thumbnail;
 
   const isUnread = !isRead;

@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { memo, useState } from 'react';
-import { Dimensions, ImageURISource, Text } from 'react-native';
+import { Dimensions, ImageURISource, Text, useColorScheme } from 'react-native';
 import { LinearTransition } from 'react-native-reanimated';
 import { isEqual } from 'lodash';
 
@@ -71,6 +71,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
     typingText,
   } = props;
 
+  useColorScheme();
   const [shouldShowSLA, setShouldShowSLA] = useState(true);
 
   const hasPriority = priority !== null;

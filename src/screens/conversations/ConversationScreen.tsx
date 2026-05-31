@@ -77,6 +77,7 @@ type FlashListRenderItemType = {
 const ConversationList = () => {
   const { dismissAll } = useBottomSheetModal();
   const dispatch = useAppDispatch();
+  const colorScheme = useColorScheme();
   const [appState, setAppState] = useState(AppState.currentState);
 
   // This is used to prevent the infinite scrolling before the list is ready
@@ -260,6 +261,7 @@ const ConversationList = () => {
       layout={LinearTransition.springify().damping(18).stiffness(120)}
       showsVerticalScrollIndicator={false}
       data={allConversations}
+      extraData={colorScheme}
       estimatedItemSize={91}
       onScroll={scrollHandler}
       onEndReached={handleOnEndReached}

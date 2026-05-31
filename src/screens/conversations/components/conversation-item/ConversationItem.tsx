@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { memo } from 'react';
-import { ImageURISource } from 'react-native';
+import { ImageURISource, useColorScheme } from 'react-native';
 
 import { NativeView } from '@/components-next/native-components';
 import { tailwind } from '@/theme';
@@ -83,6 +83,7 @@ export const ConversationItem = memo(
     allLabels,
     typingText,
   }: ConversationItemProps) => {
+    useColorScheme();
     const isUnread = unreadCount >= 1;
     return (
       <NativeView style={tailwind.style(

@@ -33,6 +33,7 @@ const AnimatedFlashlist = Animated.createAnimatedComponent(FlashList<Notificatio
 
 const InboxList = () => {
   const [pageNumber, setPageNumber] = useState(1);
+  const colorScheme = useColorScheme();
 
   const [isFlashListReady, setFlashListReady] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -157,6 +158,7 @@ const InboxList = () => {
       layout={LinearTransition.springify().damping(18).stiffness(120)}
       showsVerticalScrollIndicator={false}
       data={notifications}
+      extraData={colorScheme}
       estimatedItemSize={71}
       onScroll={scrollHandler}
       onEndReached={handleOnEndReached}
