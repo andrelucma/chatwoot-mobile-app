@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { ActivityIndicator, Linking, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Linking, StyleSheet, View, useColorScheme } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { getStateFromPath } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -7,7 +7,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { AppTabs } from './tabs/AppTabs';
 import i18n from 'i18n';
 import { navigationRef } from '@/utils/navigationUtils';
@@ -32,7 +32,30 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
+const AppDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: 'hsl(0, 0%, 10.5%)',
+    card: 'hsl(0, 0%, 15.8%)',
+    text: 'hsl(0, 0%, 93.5%)',
+    border: 'hsl(0, 0%, 18.9%)',
+  },
+};
+
+const AppLightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'hsl(0, 0%, 94.6%)',
+    card: 'rgb(255, 255, 255)',
+    text: 'hsl(0, 0%, 12.5%)',
+    border: 'hsl(0, 0%, 92.0%)',
+  },
+};
+
 export const AppNavigationContainer = () => {
+  const colorScheme = useColorScheme();
   const [fontsLoaded] = useFonts({
     'Inter-400-20': Inter40020,
     'Inter-420-20': Inter42020,
@@ -188,6 +211,7 @@ export const AppNavigationContainer = () => {
 
   return (
     <NavigationContainer
+      theme={colorScheme === 'dark' ? AppDarkTheme : AppLightTheme}
       linking={linking}
       ref={navigationRef}
       onReady={() => {

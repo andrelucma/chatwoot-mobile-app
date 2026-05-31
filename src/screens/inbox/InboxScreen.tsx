@@ -184,7 +184,7 @@ const InboxScreen = () => {
   }, [dispatch]);
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-gray-100 dark:bg-grayDark-50')}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-gray-100'}`)}>
       <StatusBar
         translucent
         backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : tailwind.color('bg-gray-100')}

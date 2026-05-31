@@ -277,7 +277,7 @@ const SettingsScreen = () => {
   ];
 
   return (
-    <SafeAreaView style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100 font-inter-normal-20')}>
+    <SafeAreaView style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-white'} font-inter-normal-20`)}>
       <StatusBar
         translucent
         backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : tailwind.color('bg-white')}

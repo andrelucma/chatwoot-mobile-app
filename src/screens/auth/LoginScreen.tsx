@@ -137,13 +137,13 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100')}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
       <StatusBar
         translucent
         backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : tailwind.color('bg-white')}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
-      <View style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100')}>
+      <View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tailwind.style('px-6 pt-24')}>

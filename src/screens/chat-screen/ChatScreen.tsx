@@ -138,7 +138,7 @@ const ChatScreen = (props: ChatScreenProps) => {
   if (conversation) {
     const { messageId } = props.route.params;
     return (
-      <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100')}>
+      <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
         <ChatWindowProvider conversationId={conversationId} messageId={messageId}>
           <ChatScreenWrapper {...props} />
         </ChatWindowProvider>
@@ -158,7 +158,7 @@ const ChatScreen = (props: ChatScreenProps) => {
 
   if (conversationError || !conversation) {
     return (
-      <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100')}>
+      <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
         <Animated.View
           style={tailwind.style(
             'flex-1 items-center justify-center gap-8 px-4',
