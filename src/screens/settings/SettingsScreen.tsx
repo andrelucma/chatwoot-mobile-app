@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StatusBar, Text, Platform, Pressable } from 'react-native';
+import { StatusBar, Text, Platform, Pressable, useColorScheme } from 'react-native';
 import Animated from 'react-native-reanimated';
 // import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -76,6 +76,8 @@ const buildNumber = Application.nativeBuildVersion;
 const appVersionDetails = buildNumber ? `${appVersion} (${buildNumber})` : appVersion;
 
 const SettingsScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const availabilityStatus =
@@ -275,11 +277,11 @@ const SettingsScreen = () => {
   ];
 
   return (
-    <SafeAreaView style={tailwind.style('flex-1 bg-white font-inter-normal-20')}>
+    <SafeAreaView style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100 font-inter-normal-20')}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : tailwind.color('bg-white')}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
       />
       <SettingsHeader />
       <Animated.ScrollView

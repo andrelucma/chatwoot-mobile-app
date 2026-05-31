@@ -71,7 +71,7 @@ const MessageContent = ({
   numberOfLines: number;
   isUnread?: boolean;
 }) => {
-  const textStyle = `text-md flex-1 ${isUnread ? 'font-inter-medium-24 text-gray-800' : 'font-inter-420-20 text-gray-500'} tracking-[0.32px] leading-[21px]`;
+  const textStyle = `text-md flex-1 ${isUnread ? 'font-inter-medium-24 text-gray-800 dark:text-grayDark-900' : 'font-inter-420-20 text-gray-500 dark:text-grayDark-700'} tracking-[0.32px] leading-[21px]`;
   const { contentAttributes } = message || {};
   const { email: { subject = '' } = {} } = contentAttributes || {};
 

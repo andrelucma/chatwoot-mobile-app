@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, RefreshControl, StatusBar, useColorScheme } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -169,6 +169,8 @@ const InboxList = () => {
 };
 
 const InboxScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const dispatch = useAppDispatch();
 
   // Memoize the markAllAsRead callback
@@ -180,11 +182,11 @@ const InboxScreen = () => {
   }, [dispatch]);
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-gray-100')}>
+    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-gray-100 dark:bg-grayDark-50')}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-gray-100')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : tailwind.color('bg-gray-100')}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
       />
       <InboxListStateProvider>
         <InboxHeader markAllAsRead={markAllAsRead} />

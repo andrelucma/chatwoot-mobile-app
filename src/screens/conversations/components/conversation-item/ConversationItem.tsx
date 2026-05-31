@@ -86,7 +86,7 @@ export const ConversationItem = memo(
     const isUnread = unreadCount >= 1;
     return (
       <NativeView style={tailwind.style(
-        `gap-3 flex-row justify-between mx-3 mb-2 rounded-2xl overflow-hidden ${isUnread ? 'bg-blue-50 border-l-[3px] border-l-blue-700 pl-[9px] pr-3' : 'bg-white px-3 border border-gray-200'}`
+        `gap-3 flex-row justify-between mx-3 mb-2 rounded-2xl overflow-hidden ${isUnread ? 'bg-blue-50 dark:bg-blueDark-200 border-l-[3px] border-l-blue-700 dark:border-l-blueDark-600 pl-[9px] pr-3' : 'bg-white dark:bg-grayDark-100 px-3 border border-gray-200 dark:border-grayDark-300'}`
       )}>
         <NativeView style={tailwind.style('py-3 flex flex-row')}>
           <ConversationSelect {...{ isSelected, currentState }} />

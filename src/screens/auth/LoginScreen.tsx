@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Animated, Image, Pressable, StatusBar, TextInput, View } from 'react-native';
+import { Animated, Image, Pressable, StatusBar, TextInput, View, useColorScheme } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
   BottomSheetModal,
@@ -41,6 +41,8 @@ type FormData = {
 };
 
 const LoginScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -135,13 +137,13 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100')}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : tailwind.color('bg-white')}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
       />
-      <View style={tailwind.style('flex-1 bg-white')}>
+      <View style={tailwind.style('flex-1 bg-white dark:bg-grayDark-100')}>
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tailwind.style('px-6 pt-24')}>

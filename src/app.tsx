@@ -2,12 +2,15 @@ import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Alert, BackHandler } from 'react-native';
 import { PersistGate } from 'redux-persist/integration/react';
+import { useDeviceContext } from 'twrnc';
 import { store, persistor } from './store';
 import { AppNavigator } from '@/navigation';
+import { tailwind } from '@/theme';
 
 import i18n from '@/i18n';
 
 const Chatwoot = () => {
+  useDeviceContext(tailwind);
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
     return () => {

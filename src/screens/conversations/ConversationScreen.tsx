@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, AppState, RefreshControl, StatusBar, useColorScheme } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -274,6 +274,8 @@ const ConversationList = () => {
 };
 
 const ConversationScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const currentBottomSheet = useAppSelector(selectBottomSheetState);
   const dispatch = useAppDispatch();
 
@@ -310,11 +312,11 @@ const ConversationScreen = () => {
   }, [currentBottomSheet]);
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-gray-100')}>
+    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-gray-100 dark:bg-grayDark-50')}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-gray-100')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : tailwind.color('bg-gray-100')}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
       />
       <ConversationListStateProvider>
         <ConversationHeader />
