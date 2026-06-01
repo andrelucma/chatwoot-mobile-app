@@ -48,14 +48,14 @@ export const InboxItemComponent = (props: InboxItemProps) => {
     notificationType,
   } = props;
 
-  useColorScheme();
+  const isDark = useColorScheme() === 'dark';
   const hasAssignee = assignee?.name || assignee?.thumbnail;
 
   const isUnread = !isRead;
 
   return (
     <Animated.View style={tailwind.style(
-      `mx-3 mb-2 rounded-2xl overflow-hidden py-3 ${isUnread ? 'bg-blue-50 dark:bg-blueDark-200 border-l-[3px] border-l-blue-700 dark:border-l-blueDark-600 pl-[9px] pr-3' : 'bg-white dark:bg-grayDark-100 px-3 border border-gray-200 dark:border-grayDark-300'}`
+      `mx-3 mb-2 rounded-2xl overflow-hidden py-3 ${isUnread ? `border-l-[3px] pl-[9px] pr-3 ${isDark ? 'bg-blueDark-200 border-l-blueDark-600' : 'bg-blue-50 border-l-blue-700'}` : `px-3 border ${isDark ? 'bg-grayDark-100 border-grayDark-300' : 'bg-white border-gray-200'}`}`
     )}>
       <AnimatedNativeView
         style={tailwind.style('flex flex-row justify-between items-center h-[24px]')}>
@@ -64,16 +64,16 @@ export const InboxItemComponent = (props: InboxItemProps) => {
           <Animated.Text
             numberOfLines={1}
             style={tailwind.style(
-              `text-lg ${isUnread ? 'font-inter-semibold-20' : 'font-inter-medium-24'} tracking-[0.24px] text-gray-950 dark:text-grayDark-950 capitalize`,
+              `text-lg ${isUnread ? 'font-inter-semibold-20' : 'font-inter-medium-24'} tracking-[0.24px] ${isDark ? 'text-grayDark-950' : 'text-gray-950'} capitalize`,
               `max-w-[${width - 250}px]`,
             )}>
             {sender.name || ''}
           </Animated.Text>
           <NativeView style={tailwind.style('flex flex-row items-center gap-0.5')}>
-            <Animated.Text style={tailwind.style('text-sm font-inter-420-20 text-gray-400 dark:text-grayDark-600')}>
+            <Animated.Text style={tailwind.style(`text-sm font-inter-420-20 ${isDark ? 'text-grayDark-600' : 'text-gray-400'}`)}>
               #
             </Animated.Text>
-            <Animated.Text style={tailwind.style('text-sm font-inter-420-20 text-gray-400 dark:text-grayDark-600')}>
+            <Animated.Text style={tailwind.style(`text-sm font-inter-420-20 ${isDark ? 'text-grayDark-600' : 'text-gray-400'}`)}>
               {conversationId}
             </Animated.Text>
           </NativeView>
@@ -86,7 +86,7 @@ export const InboxItemComponent = (props: InboxItemProps) => {
           <NativeView>
             <Animated.Text
               style={tailwind.style(
-                'text-sm font-inter-420-20 leading-[16px] tracking-[0.32px] text-gray-500 dark:text-grayDark-700',
+                `text-sm font-inter-420-20 leading-[16px] tracking-[0.32px] ${isDark ? 'text-grayDark-700' : 'text-gray-500'}`,
               )}>
               {lastActivityAt()}
             </Animated.Text>
@@ -106,7 +106,7 @@ export const InboxItemComponent = (props: InboxItemProps) => {
 
           <Animated.Text
             style={tailwind.style(
-              `text-md ${isUnread ? 'font-inter-medium-24 text-gray-800 dark:text-grayDark-900' : 'font-inter-420-20 text-gray-500 dark:text-grayDark-700'} leading-[17px] tracking-[0.32px] flex-shrink`,
+              `text-md ${isUnread ? `font-inter-medium-24 ${isDark ? 'text-grayDark-900' : 'text-gray-800'}` : `font-inter-420-20 ${isDark ? 'text-grayDark-700' : 'text-gray-500'}`} leading-[17px] tracking-[0.32px] flex-shrink`,
             )}
             numberOfLines={1}
             ellipsizeMode="tail">

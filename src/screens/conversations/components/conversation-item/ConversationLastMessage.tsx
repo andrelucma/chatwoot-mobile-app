@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, Text, ViewStyle } from 'react-native';
+import { StyleProp, Text, ViewStyle, useColorScheme } from 'react-native';
 
 import { tailwind } from '@/theme';
 import { NativeView } from '@/components-next/native-components';
@@ -66,12 +66,14 @@ const MessageContent = ({
   message,
   numberOfLines,
   isUnread,
+  isDark,
 }: {
   message: Message;
   numberOfLines: number;
   isUnread?: boolean;
+  isDark?: boolean;
 }) => {
-  const textStyle = `text-md flex-1 ${isUnread ? 'font-inter-medium-24 text-gray-800 dark:text-grayDark-900' : 'font-inter-420-20 text-gray-500 dark:text-grayDark-700'} tracking-[0.32px] leading-[21px]`;
+  const textStyle = `text-md flex-1 ${isUnread ? `font-inter-medium-24 ${isDark ? 'text-grayDark-900' : 'text-gray-800'}` : `font-inter-420-20 ${isDark ? 'text-grayDark-700' : 'text-gray-500'}`} tracking-[0.32px] leading-[21px]`;
   const { contentAttributes } = message || {};
   const { email: { subject = '' } = {} } = contentAttributes || {};
 
@@ -129,10 +131,11 @@ const MessageContent = ({
 };
 
 export const ConversationLastMessage = (props: ConversationLastMessageProps) => {
+  const isDark = useColorScheme() === 'dark';
   const { numberOfLines, lastMessage, isUnread } = props;
   return (
     <NativeView style={tailwind.style('flex-1 flex-row gap-1 items-start')}>
-      <MessageContent message={lastMessage} numberOfLines={numberOfLines} isUnread={isUnread} />
+      <MessageContent message={lastMessage} numberOfLines={numberOfLines} isUnread={isUnread} isDark={isDark} />
     </NativeView>
   );
 };

@@ -83,12 +83,13 @@ export const ConversationItem = memo(
     allLabels,
     typingText,
   }: ConversationItemProps) => {
-    useColorScheme();
+    const isDark = useColorScheme() === 'dark';
     const isUnread = unreadCount >= 1;
+    const cardStyle = isUnread
+      ? `gap-3 flex-row justify-between mx-3 mb-2 rounded-2xl overflow-hidden border-l-[3px] pl-[9px] pr-3 ${isDark ? 'bg-blueDark-200 border-l-blueDark-600' : 'bg-blue-50 border-l-blue-700'}`
+      : `gap-3 flex-row justify-between mx-3 mb-2 rounded-2xl overflow-hidden px-3 border ${isDark ? 'bg-grayDark-100 border-grayDark-300' : 'bg-white border-gray-200'}`;
     return (
-      <NativeView style={tailwind.style(
-        `gap-3 flex-row justify-between mx-3 mb-2 rounded-2xl overflow-hidden ${isUnread ? 'bg-blue-50 dark:bg-blueDark-200 border-l-[3px] border-l-blue-700 dark:border-l-blueDark-600 pl-[9px] pr-3' : 'bg-white dark:bg-grayDark-100 px-3 border border-gray-200 dark:border-grayDark-300'}`
-      )}>
+      <NativeView style={tailwind.style(cardStyle)}>
         <NativeView style={tailwind.style('py-3 flex flex-row')}>
           <ConversationSelect {...{ isSelected, currentState }} />
           <ConversationAvatar

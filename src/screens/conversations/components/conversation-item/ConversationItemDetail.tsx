@@ -71,7 +71,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
     typingText,
   } = props;
 
-  useColorScheme();
+  const isDark = useColorScheme() === 'dark';
   const [shouldShowSLA, setShouldShowSLA] = useState(true);
 
   const hasPriority = priority !== null;
@@ -94,7 +94,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
           <Text
             numberOfLines={1}
             style={tailwind.style(
-              `text-lg ${unreadCount >= 1 ? 'font-inter-semibold-20' : 'font-inter-medium-24'} tracking-[0.24px] text-gray-950 dark:text-grayDark-950 capitalize`,
+              `text-lg ${unreadCount >= 1 ? 'font-inter-semibold-20' : 'font-inter-medium-24'} tracking-[0.24px] ${isDark ? 'text-grayDark-950' : 'text-gray-950'} capitalize`,
               `max-w-[${width - 250}px]`,
             )}>
             {senderName}
