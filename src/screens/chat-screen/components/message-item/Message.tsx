@@ -455,10 +455,13 @@ export const MessageComponent = (props: MessageComponentProps) => {
     // }
     else if (attachments?.length >= 1 || isReplyMessage) {
       messageContent = <ComposedBubble item={item} variant={variant()} />;
-    } else if (item.content) {
-      messageContent = <TextBubble item={item} variant={variant()} />;
     } else {
-      return <View />;
+      const displayContent = item.content || (messageType === MESSAGE_TYPES.OUTGOING ? i18n.t('CHAT.TEMPLATE_SENT') : null);
+      if (displayContent) {
+        messageContent = <TextBubble item={{ ...item, content: displayContent }} variant={variant()} />;
+      } else {
+        return <View />;
+      }
     }
 
     return (

@@ -215,15 +215,16 @@ const BottomSheetContent = () => {
   });
 
   useEffect(() => {
+    if (!inboxId) return;
     if (canReply || (inbox && isAWhatsAppChannel(inbox))) {
       setReplyEditorMode(REPLY_EDITOR_MODES.REPLY);
       dispatch(togglePrivateMessage(false));
-    } else {
+    } else if (inbox) {
       setReplyEditorMode(REPLY_EDITOR_MODES.NOTE);
       dispatch(togglePrivateMessage(true));
       dispatch(setQuoteMessage(null));
     }
-  }, [inbox, canReply, dispatch]);
+  }, [inbox, inboxId, canReply, dispatch]);
 
   // Clear quote state when switching conversations to prevent cross-conversation replies
   useEffect(() => {

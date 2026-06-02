@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
-import { View, Platform } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Alert, View, Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import camelCase from 'camelcase';
 
 import { TAB_BAR_HEIGHT } from '@/constants';
@@ -26,15 +27,17 @@ import {
   ContactMetaInformation,
   ContactLabelActions,
 } from './components';
-import { AttributeList } from '@/components-next';
+import { AttributeList, Button } from '@/components-next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TabBarExcludedScreenParamList } from '@/navigation/tabs/AppTabs';
 import { selectConversationById } from '@/store/conversation/conversationSelectors';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { contactLabelActions } from '@/store/contact/contactLabelActions';
+import { contactActions } from '@/store/contact/contactActions';
 import { getContactCustomAttributes } from '@/store/custom-attribute/customAttributeSlice';
 import { selectContactById } from '@/store/contact/contactSelectors';
 import { selectContactLabelsByContactId } from '@/store/contact/contactLabelSlice';
+import { NewConversationSheet } from '@/screens/contacts/components/NewConversationSheet';
 import i18n from '@/i18n';
 
 type ContactDetailsScreenProps = NativeStackScreenProps<
@@ -118,8 +121,10 @@ const processContactAttributes = (
 };
 
 const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
-  const { conversationId, contactId: routeContactId } = props.route.params;
+  const { conversationId, contactId: routeContactId, fromContacts } = props.route.params;
   const dispatch = useAppDispatch();
+  const navigation = useNavigation();
+  const newConversationSheetRef = useRef<BottomSheetModal>(null);
 
   const conversation = useAppSelector(state =>
     conversationId ? selectConversationById(state, conversationId) : null,
@@ -179,9 +184,43 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
   useEffect(() => {
     if (contactId) {
       dispatch(contactLabelActions.getContactLabels({ contactId }));
+      dispatch(contactActions.getContact(contactId));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleEdit = () => {
+    if (contactId) {
+      navigation.dispatch(StackActions.push('ContactFormScreen', { contactId }));
+    }
+  };
+
+  const handleDelete = () => {
+    if (!contactId) return;
+    Alert.alert(
+      i18n.t('CONTACTS.DELETE_CONFIRM_TITLE'),
+      i18n.t('CONTACTS.DELETE_CONFIRM_MESSAGE'),
+      [
+        { text: i18n.t('CONTACTS.CANCEL'), style: 'cancel' },
+        {
+          text: i18n.t('CONTACTS.DELETE'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await dispatch(contactActions.deleteContact(contactId)).unwrap();
+              navigation.dispatch(StackActions.pop());
+            } catch {
+              Alert.alert(i18n.t('CONTACTS.ERROR'), i18n.t('CONTACTS.DELETE_ERROR'));
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleNewConversation = () => {
+    newConversationSheetRef.current?.present();
+  };
 
   const socialMediaDetails = allSocialMediaProfiles
     .filter(profile => socialMediaProfiles?.[profile.key as keyof typeof socialMediaProfiles])
@@ -198,25 +237,25 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
     {
       icon: <LocationIcon />,
       subtitle: fullLocation || i18n.t('CONTACT_DETAILS.VALUE_UNAVAILABLE'),
-      title: 'Location',
+      title: i18n.t('CONTACTS.LOCATION'),
       subtitleType: 'dark',
     },
     {
       icon: <CallIcon />,
       subtitle: phoneNumber || i18n.t('CONTACT_DETAILS.VALUE_UNAVAILABLE'),
-      title: 'Phone',
+      title: i18n.t('CONTACTS.PHONE'),
       subtitleType: 'dark',
     },
     {
       icon: <EmailIcon />,
       subtitle: email || i18n.t('CONTACT_DETAILS.VALUE_UNAVAILABLE'),
-      title: 'Email',
+      title: i18n.t('CONTACTS.EMAIL'),
       subtitleType: 'dark',
     },
     {
       icon: <CompanyIcon />,
       subtitle: companyName || i18n.t('CONTACT_DETAILS.VALUE_UNAVAILABLE'),
-      title: 'Company',
+      title: i18n.t('CONTACTS.COMPANY'),
       subtitleType: 'dark',
     },
   ];
@@ -234,6 +273,25 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
           thumbnail={thumbnail || contactThumbnail || ''}
           bio={description || ''}
         />
+        {fromContacts && contactId ? (
+          <Animated.View style={tailwind.style('px-4 pt-4 pb-2 gap-3')}>
+            <Button
+              text={i18n.t('CONTACTS.NEW_CONVERSATION')}
+              handlePress={handleNewConversation}
+            />
+            <Button
+              text={i18n.t('CONTACTS.EDIT')}
+              variant="secondary"
+              handlePress={handleEdit}
+            />
+            <Button
+              text={i18n.t('CONTACTS.DELETE')}
+              variant="secondary"
+              isDestructive
+              handlePress={handleDelete}
+            />
+          </Animated.View>
+        ) : null}
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT}]`)}>
@@ -257,6 +315,9 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
           ) : null}
         </Animated.ScrollView>
       </View>
+      {fromContacts && contact ? (
+        <NewConversationSheet contact={contact} sheetRef={newConversationSheetRef} />
+      ) : null}
     </BottomSheetModalProvider>
   );
 };

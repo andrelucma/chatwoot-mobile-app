@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { tailwind } from '@/theme';
-import { Channel, Message } from '@/types';
+import { Channel, Message, MessageType } from '@/types';
 import { MenuOption } from '../message-menu';
 import {
   AudioCell,
@@ -16,6 +16,7 @@ import { TextMessageCell } from '../message-components';
 import { ATTACHMENT_TYPES } from '@/constants';
 import { LocationCell } from '../message-components/LocationCell';
 import { CONTENT_TYPES } from '@/constants';
+import i18n from '@/i18n';
 
 type DateSectionProps = { item: { date: string } };
 
@@ -97,8 +98,10 @@ export const MessageItem = ({ item, channel, getMenuOptions }: MessageItemPresen
     return <ComposedCell messageData={item} channel={channel} menuOptions={getMenuOptions(item)} />;
   }
 
-  if (item.content) {
-    return <TextMessageCell item={item} channel={channel} menuOptions={getMenuOptions(item)} />;
+  const content = item.content || (item.messageType === MessageType.outgoing ? i18n.t('CHAT.TEMPLATE_SENT') : null);
+
+  if (content) {
+    return <TextMessageCell item={{ ...item, content }} channel={channel} menuOptions={getMenuOptions(item)} />;
   }
 
   return <View />;
