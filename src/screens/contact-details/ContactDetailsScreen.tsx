@@ -1,7 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { Alert, View, Platform, useColorScheme } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { StackActions, useNavigation } from '@react-navigation/native';
 import camelCase from 'camelcase';
 
@@ -37,7 +36,6 @@ import { contactActions } from '@/store/contact/contactActions';
 import { getContactCustomAttributes } from '@/store/custom-attribute/customAttributeSlice';
 import { selectContactById } from '@/store/contact/contactSelectors';
 import { selectContactLabelsByContactId } from '@/store/contact/contactLabelSlice';
-import { NewConversationSheet } from '@/screens/contacts/components/NewConversationSheet';
 import i18n from '@/i18n';
 
 type ContactDetailsScreenProps = NativeStackScreenProps<
@@ -125,7 +123,6 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
   const isDark = useColorScheme() === 'dark';
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
-  const newConversationSheetRef = useRef<BottomSheetModal>(null);
 
   const conversation = useAppSelector(state =>
     conversationId ? selectConversationById(state, conversationId) : null,
@@ -220,7 +217,9 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
   };
 
   const handleNewConversation = () => {
-    newConversationSheetRef.current?.present();
+    if (contactId) {
+      navigation.dispatch(StackActions.push('NewConversationScreen', { contactId }));
+    }
   };
 
   const socialMediaDetails = allSocialMediaProfiles
@@ -264,12 +263,11 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
   const allDetails = [...userDetails, ...socialMediaDetails];
 
   return (
-    <BottomSheetModalProvider>
-      <View
-        style={tailwind.style(
-          'flex-1',
-          isDark ? 'bg-grayDark-100' : 'bg-white',
-        )}>
+    <View
+      style={tailwind.style(
+        'flex-1',
+        isDark ? 'bg-grayDark-100' : 'bg-white',
+      )}>
         <ContactDetailsScreenHeader
           name={name || contactName || ''}
           thumbnail={thumbnail || contactThumbnail || ''}
@@ -317,10 +315,6 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
           ) : null}
         </Animated.ScrollView>
       </View>
-      {fromContacts && contact ? (
-        <NewConversationSheet contact={contact} sheetRef={newConversationSheetRef} />
-      ) : null}
-    </BottomSheetModalProvider>
   );
 };
 

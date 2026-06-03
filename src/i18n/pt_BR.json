@@ -554,6 +554,7 @@
     "DELETE_CONFIRM_TITLE": "Excluir contato",
     "DELETE_CONFIRM_MESSAGE": "Tem certeza que deseja excluir este contato? Essa ação não pode ser desfeita.",
     "NEW_CONVERSATION": "Nova conversa",
+    "CLOSE_LIST": "Fechar",
     "SELECT_INBOX": "Selecionar canal",
     "NO_INBOXES": "Nenhum canal disponível para este contato",
     "INITIAL_MESSAGE": "Mensagem inicial",

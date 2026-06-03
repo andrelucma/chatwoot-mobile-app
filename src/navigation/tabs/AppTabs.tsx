@@ -23,6 +23,7 @@ import { AuthStack, ContactsStack, ConversationStack, SettingsStack, InboxStack 
 import ChatScreen from '@/screens/chat-screen/ChatScreen';
 import ContactDetailsScreen from '@/screens/contact-details/ContactDetailsScreen';
 import ContactFormScreen from '@/screens/contacts/ContactFormScreen';
+import NewConversationScreen from '@/screens/contacts/NewConversationScreen';
 import DashboardScreen from '@/screens/dashboard/DashboardScreen';
 import SearchScreen from '@/screens/search/SearchScreen';
 
@@ -65,6 +66,7 @@ export type TabBarExcludedScreenParamList = {
   };
   ContactDetails: { conversationId?: number; contactId?: number; fromContacts?: boolean };
   ContactFormScreen: { contactId?: number };
+  NewConversationScreen: { contactId: number };
   ConversationActions: undefined;
   Dashboard: { url: string };
   Login: undefined;
@@ -213,6 +215,11 @@ export const AppTabs = () => {
           options={{ animation: 'slide_from_right' }}
           name="ContactFormScreen"
           component={ContactFormScreen}
+        />
+        <Stack.Screen
+          options={{ animation: 'slide_from_right' }}
+          name="NewConversationScreen"
+          component={NewConversationScreen}
         />
       </Stack.Navigator>
     );
