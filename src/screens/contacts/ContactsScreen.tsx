@@ -10,6 +10,7 @@ import { tailwind } from '@/theme';
 import { Contact } from '@/types';
 import { useAppDispatch } from '@/hooks';
 import { contactActions } from '@/store/contact/contactActions';
+import { addContact } from '@/store/contact/contactSlice';
 import { ContactItem } from './components/ContactItem';
 import i18n from '@/i18n';
 
@@ -30,13 +31,13 @@ const groupByLetter = (contacts: Contact[]): Section[] => {
     .map(([title, data]) => ({ title, data }));
 };
 
-const EmptyContactsIcon = ({ isDark }: { isDark: boolean }) => (
-  <Svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-    <Circle cx="32" cy="22" r="12" stroke={isDark ? '#4b5563' : '#d1d5db'} strokeWidth="2.5" />
+const EmptyContactsIcon = () => (
+  <Svg width="80" height="80" viewBox="0 0 64 64" fill="none">
+    <Circle cx="32" cy="22" r="12" fill="#EFF6FF" stroke="#1D4ED8" strokeWidth="2" />
     <Path
       d="M10 54C10 42.954 20.059 34 32 34C43.941 34 54 42.954 54 54"
-      stroke={isDark ? '#4b5563' : '#d1d5db'}
-      strokeWidth="2.5"
+      stroke="#1D4ED8"
+      strokeWidth="2"
       strokeLinecap="round"
     />
   </Svg>
@@ -123,11 +124,12 @@ const ContactsScreen = () => {
 
   const handleContactPress = useCallback(
     (contact: Contact) => {
+      dispatch(addContact(contact));
       navigation.dispatch(
         StackActions.push('ContactDetails', { contactId: contact.id, fromContacts: true }),
       );
     },
-    [navigation],
+    [dispatch, navigation],
   );
 
   const handleNewContact = useCallback(() => {
@@ -147,13 +149,13 @@ const ContactsScreen = () => {
       return (
         <Animated.View
           style={tailwind.style(
-            'px-5 py-1 mt-1',
+            'flex flex-row items-center pl-4 pr-4 py-[7px]',
             isDark ? 'bg-grayDark-50' : 'bg-white',
           )}>
+          <Animated.View style={tailwind.style('w-[3px] h-[14px] rounded-full bg-blue-700 mr-[10px]')} />
           <Animated.Text
             style={tailwind.style(
-              'text-xs font-inter-medium-24 tracking-[0.8px] uppercase',
-              isDark ? 'text-grayDark-500' : 'text-gray-400',
+              'text-xs font-inter-580-24 tracking-[1px] uppercase text-blue-700',
             )}>
             {section.title}
           </Animated.Text>
@@ -167,18 +169,18 @@ const ContactsScreen = () => {
     if (loading) return null;
     return (
       <Animated.View style={tailwind.style('flex-1 items-center justify-center py-16')}>
-        <EmptyContactsIcon isDark={isDark} />
+        <EmptyContactsIcon />
         <Animated.Text
           style={tailwind.style(
-            'text-base font-inter-medium-24 mt-4',
-            isDark ? 'text-grayDark-700' : 'text-gray-400',
+            'text-base font-inter-580-24 mt-5',
+            isDark ? 'text-grayDark-700' : 'text-gray-700',
           )}>
           {query ? i18n.t('CONTACTS.EMPTY_SEARCH') : i18n.t('CONTACTS.EMPTY_STATE')}
         </Animated.Text>
         {!query && (
           <Animated.Text
             style={tailwind.style(
-              'text-sm font-inter-normal-20 mt-1',
+              'text-sm font-inter-normal-20 mt-1 text-center px-8',
               isDark ? 'text-grayDark-500' : 'text-gray-400',
             )}>
             {i18n.t('CONTACTS.EMPTY_STATE_HINT')}
@@ -205,40 +207,37 @@ const ContactsScreen = () => {
       )}>
 
       {/* Header */}
-      <Animated.View style={tailwind.style('px-4 pt-1 pb-3')}>
-        <Animated.View style={tailwind.style('flex flex-row items-center justify-between')}>
+      <Animated.View style={tailwind.style('px-4 pt-2 pb-3')}>
+        <Animated.View style={tailwind.style('flex flex-row items-start justify-between')}>
           <Animated.View>
             <Animated.Text
               style={tailwind.style(
-                'text-[26px] font-inter-580-24 leading-[32px]',
+                'text-[28px] font-inter-580-24 leading-[34px]',
                 isDark ? 'text-grayDark-950' : 'text-gray-950',
               )}>
               {i18n.t('CONTACTS.TITLE')}
             </Animated.Text>
             {totalCount > 0 && (
-              <Animated.Text
-                style={tailwind.style(
-                  'text-[13px] font-inter-normal-20 mt-[2px]',
-                  isDark ? 'text-grayDark-500' : 'text-gray-400',
-                )}>
-                {totalCount} {i18n.t('CONTACTS.CONTACTS_COUNT')}
-              </Animated.Text>
+              <Animated.View style={tailwind.style('flex flex-row items-center mt-[4px] gap-[6px]')}>
+                <Animated.View style={tailwind.style('w-[6px] h-[6px] rounded-full bg-blue-700')} />
+                <Animated.Text style={tailwind.style('text-[13px] font-inter-normal-20 text-blue-700')}>
+                  {totalCount} {i18n.t('CONTACTS.CONTACTS_COUNT')}
+                </Animated.Text>
+              </Animated.View>
             )}
           </Animated.View>
 
           <Pressable
             onPress={handleNewContact}
-            hitSlop={12}
+            hitSlop={8}
             style={({ pressed }) =>
               tailwind.style(
-                'w-9 h-9 rounded-full items-center justify-center',
-                isDark
-                  ? pressed ? 'bg-grayDark-300' : 'bg-grayDark-200'
-                  : pressed ? 'bg-blue-100' : 'bg-blue-50',
+                'w-10 h-10 rounded-xl items-center justify-center bg-blue-800',
+                pressed ? 'opacity-70' : '',
               )
             }>
             <Animated.Text
-              style={tailwind.style('text-[22px] font-inter-normal-20 leading-[26px] text-blue-700')}>
+              style={tailwind.style('text-[26px] font-inter-normal-20 leading-[28px] text-white mt-[-2px]')}>
               +
             </Animated.Text>
           </Pressable>

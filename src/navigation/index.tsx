@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { ActivityIndicator, Linking, StyleSheet, View, useColorScheme } from 'react-native';
+import { ActivityIndicator, Linking, StyleSheet, View } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { getStateFromPath } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -55,7 +55,7 @@ const AppLightTheme = {
 };
 
 export const AppNavigationContainer = () => {
-  const colorScheme = useColorScheme();
+  const colorScheme = 'light';
   const [fontsLoaded] = useFonts({
     'Inter-400-20': Inter40020,
     'Inter-420-20': Inter42020,

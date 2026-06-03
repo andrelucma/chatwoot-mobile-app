@@ -314,15 +314,17 @@ const ConversationScreen = () => {
   }, [currentBottomSheet]);
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-gray-100'}`)}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-blue-800'}`)}>
       <StatusBar
         translucent
-        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : tailwind.color('bg-gray-100')}
-        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : '#1e40af'}
+        barStyle="light-content"
       />
       <ConversationListStateProvider>
         <ConversationHeader />
-        <ConversationList />
+        <Animated.View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-gray-100'}`)}>
+          <ConversationList />
+        </Animated.View>
         <BottomSheetModal
           ref={filtersModalSheetRef}
           backdropComponent={BottomSheetBackdrop}

@@ -137,33 +137,36 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-blue-800'}`)}>
       <StatusBar
         translucent
-        backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : tailwind.color('bg-white')}
-        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : '#1e40af'}
+        barStyle="light-content"
       />
-      <View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={tailwind.style('px-6 pt-24')}>
+      <View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-blue-800'}`)}>
+
+        {/* Brand hero */}
+        <View style={tailwind.style('items-center pt-10 pb-8 px-6')}>
           <Image
             // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
             source={require('@/assets/images/logo.png')}
-            style={tailwind.style('w-10 h-10')}
+            style={tailwind.style('w-16 h-16')}
             resizeMode="contain"
           />
-          <View style={tailwind.style('pt-6 gap-4')}>
-            <Animated.Text style={tailwind.style('text-2xl text-gray-950 font-inter-semibold-20')}>
-              {i18n.t('LOGIN.TITLE')}
-            </Animated.Text>
-            <Animated.Text
-              style={tailwind.style(
-                'font-inter-normal-20 leading-[18px] tracking-[0.32px] text-gray-900',
-              )}>
-              {i18n.t('LOGIN.DESCRIPTION', { baseUrl })}
-            </Animated.Text>
-          </View>
+          <Animated.Text style={tailwind.style('text-[26px] font-inter-580-24 text-white mt-4')}>
+            {i18n.t('LOGIN.TITLE')}
+          </Animated.Text>
+          <Animated.Text
+            style={tailwind.style('text-[14px] font-inter-normal-20 text-blue-200 mt-1 text-center')}>
+            {i18n.t('LOGIN.DESCRIPTION', { baseUrl })}
+          </Animated.Text>
+        </View>
+
+        {/* Form card */}
+        <View style={tailwind.style(`flex-1 rounded-t-[28px] ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
+        <Animated.ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={tailwind.style('px-6 pt-8 pb-8')}>
 
           {showSsoLogin && (
             <View>
@@ -173,7 +176,6 @@ const LoginScreen = () => {
                 handlePress={handleSsoLogin}
                 disabled={isLoggingIn}
                 variant="outline"
-                style={tailwind.style('mt-8')}
               />
 
               <View style={tailwind.style('flex-row items-center my-6')}>
@@ -289,6 +291,7 @@ const LoginScreen = () => {
             </Animated.Text>
           </Pressable>
         </Animated.ScrollView>
+        </View>
       </View>
       <BottomSheetModal
         ref={languagesModalSheetRef}

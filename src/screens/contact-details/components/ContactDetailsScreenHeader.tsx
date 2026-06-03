@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable } from 'react-native';
+import { Platform, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { StackActions, useNavigation } from '@react-navigation/native';
 
@@ -15,8 +15,8 @@ type ContactDetailsScreenHeaderProps = {
 
 export const ContactDetailsScreenHeader = (props: ContactDetailsScreenHeaderProps) => {
   const navigation = useNavigation();
-
   const { name, thumbnail, bio } = props;
+
   const handleBackPress = () => {
     navigation.dispatch(StackActions.pop());
   };
@@ -24,31 +24,28 @@ export const ContactDetailsScreenHeader = (props: ContactDetailsScreenHeaderProp
   return (
     <Animated.View
       style={tailwind.style(
-        'flex flex-row items-start px-4 border-b-[1px] border-b-blackA-A3 py-[13px]',
+        `bg-blue-800 pb-7 ${Platform.OS === 'android' ? 'pt-12' : 'pt-10'}`,
       )}>
-      <Pressable hitSlop={16} onPress={handleBackPress} style={tailwind.style('flex-1')}>
-        <Animated.View>
-          <Icon icon={<CloseIcon />} size={24} />
-        </Animated.View>
-      </Pressable>
-      <Animated.View>
-        <Animated.View style={tailwind.style('flex items-center')}>
-          <Avatar size="4xl" src={thumbnail ? { uri: thumbnail } : undefined} name={name} />
-          <Animated.View style={tailwind.style('flex flex-col items-center gap-1 pt-3')}>
-            <Animated.Text style={tailwind.style('text-[21px] font-inter-580-24 text-gray-950')}>
-              {name}
-            </Animated.Text>
-            <Animated.Text
-              style={tailwind.style(
-                'text-[15px] font-inter-420-20 leading-[17.25px] text-gray-900',
-              )}>
-              {bio}
-            </Animated.Text>
-          </Animated.View>
-        </Animated.View>
+      <Animated.View style={tailwind.style('flex flex-row items-center px-4 pb-3')}>
+        <Pressable hitSlop={16} onPress={handleBackPress} style={tailwind.style('w-8 h-8 items-center justify-center')}>
+          <Icon icon={<CloseIcon stroke="white" />} size={22} />
+        </Pressable>
+        <Animated.View style={tailwind.style('flex-1')} />
       </Animated.View>
-      <Animated.View style={tailwind.style('flex-1 items-end')}>
-        {/* <Icon icon={<Overflow strokeWidth={2} />} size={24} /> */}
+      <Animated.View style={tailwind.style('items-center px-6')}>
+        <Avatar size="4xl" src={thumbnail ? { uri: thumbnail } : undefined} name={name} />
+        <Animated.Text
+          numberOfLines={1}
+          style={tailwind.style('text-[21px] font-inter-580-24 text-white mt-4')}>
+          {name}
+        </Animated.Text>
+        {bio ? (
+          <Animated.Text
+            numberOfLines={2}
+            style={tailwind.style('text-[13px] font-inter-420-20 text-blue-200 mt-1 text-center leading-[18px]')}>
+            {bio}
+          </Animated.Text>
+        ) : null}
       </Animated.View>
     </Animated.View>
   );

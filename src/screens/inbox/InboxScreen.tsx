@@ -184,15 +184,17 @@ const InboxScreen = () => {
   }, [dispatch]);
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-gray-100'}`)}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-blue-800'}`)}>
       <StatusBar
         translucent
-        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : tailwind.color('bg-gray-100')}
-        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : '#1e40af'}
+        barStyle="light-content"
       />
       <InboxListStateProvider>
         <InboxHeader markAllAsRead={markAllAsRead} />
-        <InboxList />
+        <Animated.View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-gray-100'}`)}>
+          <InboxList />
+        </Animated.View>
       </InboxListStateProvider>
     </SafeAreaView>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Pressable } from 'react-native';
+import { Dimensions, Pressable, useColorScheme } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { Icon, IconButton } from '@/components-next';
@@ -25,6 +25,7 @@ const OPTION_WIDTH = (SCREEN_WIDTH - 32 - 12 * 3) / 2;
 
 const ContactOptionComponent = (props: ContactOptionProps) => {
   const { option, handleOptionPress } = props;
+  const isDark = useColorScheme() === 'dark';
 
   const { handlers, animatedStyle } = useScaleAnimation();
   const hapticSelection = useHaptic();
@@ -39,9 +40,11 @@ const ContactOptionComponent = (props: ContactOptionProps) => {
       <Pressable
         style={({ pressed }) => [
           tailwind.style(
-            'flex items-center justify-center flex-1 rounded-xl bg-gray-50 py-3',
+            'flex items-center justify-center flex-1 rounded-xl py-3',
             `w-[${OPTION_WIDTH}px]`,
-            pressed ? 'bg-gray-100' : '',
+            isDark
+              ? pressed ? 'bg-grayDark-300' : 'bg-grayDark-200'
+              : pressed ? 'bg-gray-100' : 'bg-gray-50',
           ),
         ]}
         onPress={handleOnPress}

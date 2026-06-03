@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Alert, View, Platform } from 'react-native';
+import { Alert, View, Platform, useColorScheme } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { StackActions, useNavigation } from '@react-navigation/native';
@@ -122,6 +122,7 @@ const processContactAttributes = (
 
 const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
   const { conversationId, contactId: routeContactId, fromContacts } = props.route.params;
+  const isDark = useColorScheme() === 'dark';
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const newConversationSheetRef = useRef<BottomSheetModal>(null);
@@ -266,7 +267,8 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
     <BottomSheetModalProvider>
       <View
         style={tailwind.style(
-          `flex-1 bg-white pt-6 ${Platform.OS === 'android' ? 'pt-12' : 'pt-6'}`,
+          'flex-1',
+          isDark ? 'bg-grayDark-100' : 'bg-gray-50',
         )}>
         <ContactDetailsScreenHeader
           name={name || contactName || ''}

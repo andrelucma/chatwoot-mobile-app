@@ -143,7 +143,7 @@ export const NewConversationSheet = ({ contact, sheetRef }: NewConversationSheet
     <BottomSheetModal
       ref={sheetRef}
       snapPoints={snapPoints}
-      onAnimate={(_, toIndex) => toIndex === 0 && handleSheetOpen()}
+      onAnimate={(fromIndex, toIndex) => fromIndex === -1 && toIndex === 0 && handleSheetOpen()}
       backgroundStyle={tailwind.style(isDark ? 'bg-grayDark-100' : 'bg-white')}
       handleIndicatorStyle={tailwind.style(isDark ? 'bg-grayDark-400' : 'bg-gray-300')}>
       <BottomSheetScrollView
