@@ -268,7 +268,7 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
       <View
         style={tailwind.style(
           'flex-1',
-          isDark ? 'bg-grayDark-100' : 'bg-gray-50',
+          isDark ? 'bg-grayDark-100' : 'bg-white',
         )}>
         <ContactDetailsScreenHeader
           name={name || contactName || ''}

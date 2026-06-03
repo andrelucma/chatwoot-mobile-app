@@ -27,7 +27,7 @@ export class ContactService {
           params: { q: trimmedQ, page, include_contacts: true },
         })
       : await apiService.get<{ meta: object; payload: object[] }>('contacts', {
-          params: { page },
+          params: { page, sort: 'name' },
         });
     const { meta, payload: contacts } = response.data;
     return {

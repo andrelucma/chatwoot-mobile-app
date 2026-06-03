@@ -75,7 +75,11 @@ const ContactsScreen = () => {
         const result = await dispatch(
           contactActions.searchContacts({ q: q || ' ', page: nextPage }),
         ).unwrap();
-        setContacts(prev => (reset ? result.contacts : [...prev, ...result.contacts]));
+        const merged = reset ? result.contacts : [...prev, ...result.contacts];
+        const sorted = [...merged].sort((a, b) =>
+          (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' }),
+        );
+        setContacts(sorted);
         setTotalCount(result.meta.count);
         setPage(nextPage);
       } catch {
