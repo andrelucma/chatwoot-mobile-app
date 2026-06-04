@@ -38,7 +38,7 @@ import { setQuoteMessage } from '@/store/conversation/sendMessageSlice';
 import { inboxSupportsReplyTo } from '@/utils';
 import { MenuOption, MessageMenu } from '../message-menu';
 import { tailwind } from '@/theme';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, View, Platform } from 'react-native';
 import { Avatar } from '@/components-next';
 import { useTargetMessageAnimation } from './useTargetMessageAnimation';
 
@@ -152,7 +152,7 @@ const MessageWrapper = ({
           <Animated.View
             style={[
               tailwind.style(
-                'relative pl-3 pr-2.5 py-2 rounded-2xl overflow-hidden',
+                'relative pl-3 pr-4 py-2 rounded-2xl overflow-hidden',
                 `${variant === MESSAGE_VARIANTS.EMAIL ? `max-w-[${EMAIL_WIDTH}px]` : `max-w-[${TEXT_MAX_WIDTH}px]`}`,
                 variantBaseMap[variant],
                 variantBorderMap[variant],
@@ -172,9 +172,12 @@ const MessageWrapper = ({
                     : 'rounded-br-none'
                   : '',
               ),
+              { minWidth: 120 },
               zoomStyle,
             ]}>
             {children}
+            {/* Spacer: garante largura mínima do balão para o horário */}
+            <Animated.View style={{ height: 0, width: 92 }} />
             {/* Highlight overlay for target message */}
             {isTargetMessage && (
               <Animated.View
@@ -188,13 +191,13 @@ const MessageWrapper = ({
             {!shouldGroupWithPrevious && (
               <Animated.View
                 style={tailwind.style(
-                  'h-[21px] pt-[5px] pb-0.5 flex flex-row items-center justify-end',
+                  'pt-1 pb-1 flex flex-row items-center justify-end',
                 )}>
                 <Animated.Text
-                  style={tailwind.style(
-                    'text-xs font-inter-420-20 tracking-[0.32px] pr-1',
-                    variantTextMap[variant],
-                  )}>
+                  style={[
+                    tailwind.style('text-xs font-inter-420-20 tracking-[0.32px] pr-1', variantTextMap[variant]),
+                    Platform.OS === 'android' ? { fontSize: 11 } : null,
+                  ]}>
                   {unixTimestampToReadableTime(item.createdAt)}
                 </Animated.Text>
                 <DeliveryStatus

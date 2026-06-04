@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Text, Dimensions } from 'react-native';
+import { Animated, StyleSheet, Text, Dimensions } from 'react-native';
 
 import { tailwind } from '@/theme';
 import { Channel, Message, MessageStatus, MessageType } from '@/types';
@@ -83,26 +83,39 @@ export const MessageTextCell = (props: MessageTextCellProps) => {
 
   const EMAIL_MESSAGE_WIDTH = windowWidth - 52; // 52 is the sum of the left and right padding (12 + 12) and avatar width (24) and gap between avatar and message (4)
 
+  const cornerStyle = isAvatarRendered
+    ? isOutgoing ? 'rounded-br-none' : isIncoming ? 'rounded-bl-none' : ''
+    : '';
+
   return (
     <Animated.View
       style={[
+        tailwind.style('relative pl-3 pr-2.5 pt-2 pb-6'),
+        { minWidth: 120 },
         tailwind.style(
-          'relative pl-3 pr-2.5 py-2 rounded-2xl overflow-hidden',
           isEmailMessage ? `max-w-[${EMAIL_MESSAGE_WIDTH}px]` : `max-w-[${TEXT_MAX_WIDTH}px]`,
-          isIncoming ? 'bg-blue-700' : '',
-          isOutgoing ? 'bg-gray-100' : '',
-          isMessageFailed ? 'bg-ruby-700' : '',
-          isAvatarRendered
-            ? isOutgoing
-              ? 'rounded-br-none'
-              : isIncoming
-                ? 'rounded-bl-none'
-                : ''
-            : '',
+          cornerStyle,
         ),
       ]}>
-      {contentAttributes && <EmailMeta {...{ contentAttributes, sender }} />}
-      <MarkdownDisplay {...{ isIncoming, isOutgoing, isMessageFailed }} messageContent={text} />
+      {/* Background visual absoluto — não clipa os filhos */}
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFillObject,
+          tailwind.style(
+            'rounded-2xl',
+            isIncoming ? 'bg-blue-700' : '',
+            isOutgoing ? 'bg-gray-100' : '',
+            isMessageFailed ? 'bg-ruby-700' : '',
+            cornerStyle,
+          ),
+        ]}
+      />
+      <Animated.View style={tailwind.style('overflow-hidden')}>
+        {contentAttributes && <EmailMeta {...{ contentAttributes, sender }} />}
+        <MarkdownDisplay {...{ isIncoming, isOutgoing, isMessageFailed }} messageContent={text} />
+      </Animated.View>
+      {/* Spacer: força largura mínima do balão sem depender de minWidth */}
+      <Animated.View style={{ height: 0, width: 100 }} />
       {/* <Text
         // onTextLayout={handleTextLayout}
         style={tailwind.style(
@@ -116,12 +129,15 @@ export const MessageTextCell = (props: MessageTextCellProps) => {
         {text}
       </Text> */}
       <Animated.View
-        style={tailwind.style(
-          'h-[21px] pt-[5px] pb-0.5 flex flex-row items-center justify-end',
-          // singleLineShortText ? "pl-1.5" : "",
-          // singleLineLongText || isMultiLine ? "justify-end" : "",
-          // multiLineShortText ? " absolute bottom-0.5 right-2.5" : "",
-        )}>
+        style={[
+          tailwind.style(
+            'pt-1 pb-2 flex-row items-center justify-end',
+            // singleLineShortText ? "pl-1.5" : "",
+            // singleLineLongText || isMultiLine ? "justify-end" : "",
+            // multiLineShortText ? " absolute bottom-0.5 right-2.5" : "",
+          ),
+          { alignSelf: 'stretch', minWidth: 100 },
+        ]}>
         <Text
           style={tailwind.style(
             'text-xs font-inter-420-20 tracking-[0.32px] pr-1',

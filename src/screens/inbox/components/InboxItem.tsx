@@ -86,7 +86,7 @@ export const InboxItemComponent = (props: InboxItemProps) => {
           <NativeView>
             <Animated.Text
               style={tailwind.style(
-                `text-sm font-inter-420-20 leading-[16px] tracking-[0.32px] ${isDark ? 'text-grayDark-700' : 'text-gray-500'}`,
+                `text-sm font-inter-medium-24 leading-[16px] tracking-[0.32px] ${isDark ? 'text-grayDark-800' : 'text-gray-600'}`,
               )}>
               {lastActivityAt()}
             </Animated.Text>
@@ -106,7 +106,7 @@ export const InboxItemComponent = (props: InboxItemProps) => {
 
           <Animated.Text
             style={tailwind.style(
-              `text-md ${isUnread ? `font-inter-medium-24 ${isDark ? 'text-grayDark-900' : 'text-gray-800'}` : `font-inter-420-20 ${isDark ? 'text-grayDark-700' : 'text-gray-500'}`} leading-[17px] tracking-[0.32px] flex-shrink`,
+              `text-md ${isUnread ? `font-inter-semibold-20 ${isDark ? 'text-grayDark-950' : 'text-gray-950'}` : `font-inter-420-20 ${isDark ? 'text-grayDark-700' : 'text-gray-600'}`} leading-[17px] tracking-[0.32px] flex-shrink`,
             )}
             numberOfLines={1}
             ellipsizeMode="tail">

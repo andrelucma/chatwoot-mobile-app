@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, StatusBar, useColorScheme } from 'react-native';
+import { ActivityIndicator, RefreshControl, StatusBar, View, useColorScheme } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -165,6 +165,8 @@ const InboxList = () => {
       onEndReachedThreshold={0.5}
       ListFooterComponent={ListFooterComponent}
       renderItem={handleRender}
+      style={tailwind.style('flex-1')}
+      ListHeaderComponent={() => <View style={{ height: 8, backgroundColor: colorScheme === 'dark' ? '#1c1c1e' : 'white' }} />}
       contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}
     />
   );

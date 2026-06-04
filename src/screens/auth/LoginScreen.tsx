@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Animated, Image, Pressable, StatusBar, TextInput, View, useColorScheme } from 'react-native';
+import { Animated, Image, Keyboard, Platform, Pressable, StatusBar, TextInput, View, useColorScheme } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useNavigation } from '@react-navigation/native';
 import {
   BottomSheetModal,
@@ -57,6 +58,15 @@ const LoginScreen = () => {
   });
 
   const { languagesModalSheetRef } = useRefsContext();
+  const [keyboardShown, setKeyboardShown] = useState(false);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, () => setKeyboardShown(true));
+    const hideSub = Keyboard.addListener(hideEvent, () => setKeyboardShown(false));
+    return () => { showSub.remove(); hideSub.remove(); };
+  }, []);
 
   const animationConfigs = useBottomSheetSpringConfigs({
     mass: 1,
@@ -143,30 +153,33 @@ const LoginScreen = () => {
         backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : '#1e40af'}
         barStyle="light-content"
       />
-      <View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-blue-800'}`)}>
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        style={tailwind.style('flex-1')}
+        contentContainerStyle={tailwind.style('flex-grow')}>
 
-        {/* Brand hero */}
-        <View style={tailwind.style('items-center pt-10 pb-8 px-6')}>
-          <Image
-            // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-            source={require('@/assets/images/logo.png')}
-            style={tailwind.style('w-16 h-16')}
-            resizeMode="contain"
-          />
-          <Animated.Text style={tailwind.style('text-[26px] font-inter-580-24 text-white mt-4')}>
-            {i18n.t('LOGIN.TITLE')}
-          </Animated.Text>
-          <Animated.Text
-            style={tailwind.style('text-[14px] font-inter-normal-20 text-blue-200 mt-1 text-center')}>
-            {i18n.t('LOGIN.DESCRIPTION', { baseUrl })}
-          </Animated.Text>
-        </View>
+          {/* Brand hero — esconde quando teclado está visível */}
+          {!keyboardShown && (
+            <View style={tailwind.style(`items-center pt-10 pb-8 px-6 ${isDark ? 'bg-grayDark-100' : 'bg-blue-800'}`)}>
+              <Image
+                // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+                source={require('@/assets/images/logo.png')}
+                style={tailwind.style('w-16 h-16')}
+                resizeMode="contain"
+              />
+              <Animated.Text style={tailwind.style('text-[26px] font-inter-580-24 text-white mt-4')}>
+                {i18n.t('LOGIN.TITLE')}
+              </Animated.Text>
+              <Animated.Text
+                style={tailwind.style('text-[14px] font-inter-normal-20 text-blue-200 mt-1 text-center')}>
+                {i18n.t('LOGIN.DESCRIPTION', { baseUrl })}
+              </Animated.Text>
+            </View>
+          )}
 
-        {/* Form card */}
-        <View style={tailwind.style(`flex-1 rounded-t-[28px] ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={tailwind.style('px-6 pt-8 pb-8')}>
+          {/* Form card */}
+          <View style={tailwind.style(`rounded-t-[28px] px-6 pt-8 pb-8 ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
 
           {showSsoLogin && (
             <View>
@@ -290,9 +303,8 @@ const LoginScreen = () => {
               {i18n.t('LOGIN.CHANGE_LANGUAGE')}
             </Animated.Text>
           </Pressable>
-        </Animated.ScrollView>
-        </View>
-      </View>
+          </View>
+      </KeyboardAwareScrollView>
       <BottomSheetModal
         ref={languagesModalSheetRef}
         backdropComponent={BottomSheetBackdrop}

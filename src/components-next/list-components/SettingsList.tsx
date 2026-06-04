@@ -44,15 +44,16 @@ const ListItem = (props: ListItemProps) => {
             listItem.icon ? 'ml-3' : '',
             !isLastItem ? 'border-b-[1px] border-b-blackA-A3' : '',
           )}>
-          <Animated.View>
+          <Animated.View style={tailwind.style('flex-1 mr-2')}>
             <Animated.Text
+              numberOfLines={1}
               style={tailwind.style(
                 'text-base font-inter-420-20 leading-[22px] tracking-[0.16px] text-gray-950',
               )}>
               {listItem.title}
             </Animated.Text>
           </Animated.View>
-          <Animated.View style={tailwind.style('flex flex-row items-center pr-3')}>
+          <Animated.View style={tailwind.style('flex flex-row items-center pr-3 flex-shrink-0')}>
             <Animated.Text
               style={tailwind.style(
                 'text-base font-inter-normal-20 leading-[22px] tracking-[0.16px]',

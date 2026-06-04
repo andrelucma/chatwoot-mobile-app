@@ -73,7 +73,7 @@ const MessageContent = ({
   isUnread?: boolean;
   isDark?: boolean;
 }) => {
-  const textStyle = `text-md flex-1 ${isUnread ? `font-inter-medium-24 ${isDark ? 'text-grayDark-900' : 'text-gray-800'}` : `font-inter-420-20 ${isDark ? 'text-grayDark-700' : 'text-gray-500'}`} tracking-[0.32px] leading-[21px]`;
+  const textStyle = `text-md flex-1 ${isUnread ? `font-inter-semibold-20 ${isDark ? 'text-grayDark-950' : 'text-gray-950'}` : `font-inter-420-20 ${isDark ? 'text-grayDark-700' : 'text-gray-600'}`} tracking-[0.32px] leading-[21px]`;
   const { contentAttributes } = message || {};
   const { email: { subject = '' } = {} } = contentAttributes || {};
 

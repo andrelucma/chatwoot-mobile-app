@@ -135,7 +135,7 @@ const ConversationActionOption = (props: ConversationActionOptionProps) => {
         <Icon icon={conversationAction.actionIcon} size={32} />
         <Animated.Text
           style={tailwind.style(
-            'text-md font-inter-normal-20 leading-[17px] tracking-[0.32px] text-center pt-5 text-gray-950 ',
+            'text-xs font-inter-normal-20 leading-[14px] tracking-[0.32px] text-center pt-5 text-gray-950',
           )}>
           {i18n.t(`CONVERSATION.STATUS_ACTIONS.${conversationAction.actionText.toUpperCase()}`)}
         </Animated.Text>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, RefreshControl, StatusBar, useColorScheme } from 'react-native';
+import { ActivityIndicator, AppState, RefreshControl, StatusBar, View, useColorScheme } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -270,6 +270,8 @@ const ConversationList = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       renderItem={handleRender}
+      style={tailwind.style('flex-1')}
+      ListHeaderComponent={() => <View style={{ height: 8, backgroundColor: colorScheme === 'dark' ? '#1c1c1e' : 'white' }} />}
       contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}
     />
   );
