@@ -107,6 +107,17 @@ export const ChatDropdownMenu = (props: PropsWithChildren<ChatDropdownMenuProps>
   );
 
   if (Platform.OS === 'android') {
+    // Item único sem URL: navega direto sem abrir bottom sheet
+    if (dropdownMenuList.length === 1 && !dropdownMenuList[0].url) {
+      return (
+        <Pressable
+          onPress={() => dropdownMenuList[0].onSelect(undefined, dropdownMenuList[0].title)}
+          style={tailwind.style('ml-4')}
+          hitSlop={8}>
+          {children}
+        </Pressable>
+      );
+    }
     return (
       <React.Fragment>
         <Pressable onPress={openSheet} style={tailwind.style('ml-4')} hitSlop={8}>
