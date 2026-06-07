@@ -11,8 +11,7 @@
     "simulator": {
       "ios": {
         "simulator": true
-      },
-      "workflowFile": ".eas/build/ios-simulator.yml"
+      }
     },
     "production": {
       "autoIncrement": true
@@ -21,7 +20,7 @@
   "submit": {
     "production": {
       "android": {
-        "track": "internal" // (enum: production, beta, alpha, internal)
+        "track": "internal"
       }
     }
   }
