@@ -1,5 +1,7 @@
 #!/bin/bash
 # EAS Build pre-install hook
-# Allow pnpm to regenerate lockfile if there's a config mismatch
-# (needed because CRLF/LF differences in patch hashes between Windows dev and Linux CI)
-echo "frozen-lockfile=false" >> .npmrc
+# EAS has pnpm 9.15.9 pre-installed but our lockfile was generated with pnpm 10.11.0.
+# Upgrade pnpm to the correct version via corepack before EAS runs pnpm install.
+echo "Upgrading pnpm to 10.11.0..."
+npm install -g pnpm@10.11.0
+echo "pnpm version: $(pnpm --version)"
