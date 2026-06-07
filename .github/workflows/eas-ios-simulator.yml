@@ -32,5 +32,4 @@ jobs:
       - name: Build iOS Simulator
         run: eas build --platform ios --profile simulator --non-interactive
         env:
-          EXPO_PUBLIC_PROJECT_ID: ${{ secrets.EXPO_PUBLIC_PROJECT_ID }}
-          EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE: ${{ secrets.EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE }}
+          EXPO_PUBLIC_PROJECT_ID: 361b27c1-4d2d-4a5f-b231-00456d27d148
