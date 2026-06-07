@@ -12,9 +12,7 @@
       "ios": {
         "simulator": true
       },
-      "config": {
-        "workflowFile": ".eas/build/ios-simulator.yml"
-      }
+      "workflowFile": ".eas/build/ios-simulator.yml"
     },
     "production": {
       "autoIncrement": true
