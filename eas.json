@@ -11,6 +11,9 @@
     "simulator": {
       "ios": {
         "simulator": true
+      },
+      "config": {
+        "workflowFile": ".eas/build/ios-simulator.yml"
       }
     },
     "production": {
