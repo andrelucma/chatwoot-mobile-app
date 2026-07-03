@@ -180,7 +180,11 @@ const Tabs = () => {
         options={{ headerShown: false, tabBarTestID: 'tab-contacts' }}
         component={ContactsStack}
       />
-      <Tab.Screen name="Settings" options={{ headerShown: false }} component={SettingsStack} />
+      <Tab.Screen
+        name="Settings"
+        options={{ headerShown: false, tabBarTestID: 'tab-settings' }}
+        component={SettingsStack}
+      />
     </Tab.Navigator>
   );
 };

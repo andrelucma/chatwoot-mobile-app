@@ -32,3 +32,7 @@ appId: com.betelcode.app
     id: "tab-contacts"
 - waitForAnimationToEnd
 - takeScreenshot: 03_contacts
+- tapOn:
+    id: "tab-settings"
+- waitForAnimationToEnd
+- takeScreenshot: 04_settings
