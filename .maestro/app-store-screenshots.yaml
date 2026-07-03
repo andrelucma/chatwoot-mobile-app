@@ -1,0 +1,34 @@
+appId: com.betelcode.app
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "login-email-input"
+- inputText: "${DEMO_EMAIL}"
+- hideKeyboard
+- tapOn:
+    id: "login-password-input"
+- inputText: "${DEMO_PASSWORD}"
+- hideKeyboard
+- tapOn:
+    id: "login-submit-button"
+- extendedWaitUntil:
+    visible:
+      id: "tab-conversations"
+    timeout: 20000
+- tapOn:
+    id: "tab-conversations"
+- extendedWaitUntil:
+    visible:
+      id: "conversation-item"
+    timeout: 20000
+- takeScreenshot: 01_conversations
+- tapOn:
+    id: "conversation-item"
+- waitForAnimationToEnd
+- takeScreenshot: 02_chat
+- back
+- tapOn:
+    id: "tab-contacts"
+- waitForAnimationToEnd
+- takeScreenshot: 03_contacts

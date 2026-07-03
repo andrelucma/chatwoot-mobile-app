@@ -216,6 +216,7 @@ const LoginScreen = () => {
                   {i18n.t('LOGIN.EMAIL')}
                 </Animated.Text>
                 <TextInput
+                  testID="login-email-input"
                   style={[
                     tailwind.style(
                       'text-base font-inter-normal-20 tracking-[0.24px] leading-[20px] android:leading-[18px]',
@@ -256,6 +257,7 @@ const LoginScreen = () => {
                 </Animated.Text>
                 <View style={tailwind.style('relative')}>
                   <TextInput
+                    testID="login-password-input"
                     style={[
                       tailwind.style(
                         'text-base font-inter-normal-20 tracking-[0.24px] leading-[20px] android:leading-[18px]',
@@ -292,6 +294,7 @@ const LoginScreen = () => {
           </Pressable>
 
           <Button
+            testID="login-submit-button"
             text={isLoggingIn ? i18n.t('LOGIN.LOGIN_LOADING') : i18n.t('LOGIN.LOGIN')}
             handlePress={handleSubmit(onSubmit)}
           />

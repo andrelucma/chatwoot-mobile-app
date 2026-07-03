@@ -104,6 +104,10 @@ export type SwipeableProps = {
    * @default 'bg-green-800'
    */
   rightElementBgColor?: string;
+  /**
+   * testID forwarded to the tappable content view, for e2e automation.
+   */
+  testID?: string;
 };
 
 // eslint-disable-next-line react/display-name
@@ -125,6 +129,7 @@ export const Swipeable = forwardRef((props: SwipeableProps, _ref) => {
     noOfPointers = 1,
     leftElementBgColor = 'bg-blue-800',
     rightElementBgColor = 'bg-green-800',
+    testID,
   } = props;
 
   const hapticWarning = useHaptic('success');
@@ -471,6 +476,7 @@ export const Swipeable = forwardRef((props: SwipeableProps, _ref) => {
       </AnimatedPressable>
       <GestureDetector gesture={cellGestures}>
         <AnimatedNativeView
+          testID={testID}
           entering={
             Platform.OS === 'ios'
               ? SlideInDown.delay(index * 20)
