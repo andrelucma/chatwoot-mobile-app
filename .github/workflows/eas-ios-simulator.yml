@@ -110,3 +110,12 @@ jobs:
           name: screenshots-${{ matrix.label }}
           path: screenshots/${{ matrix.label }}
           retention-days: 14
+
+      - name: Upload Maestro debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-debug-${{ matrix.label }}
+          path: ~/.maestro/tests
+          retention-days: 14
+          if-no-files-found: ignore
