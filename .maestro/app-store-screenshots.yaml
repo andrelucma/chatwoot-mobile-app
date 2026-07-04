@@ -12,12 +12,8 @@ appId: com.betelcode.app
 - hideKeyboard
 - tapOn:
     id: "login-submit-button"
-- extendedWaitUntil:
-    visible:
-      id: "tab-conversations"
-    timeout: 40000
 - repeat:
-    times: 6
+    times: 20
     commands:
       - tapOn:
           text: "Not Now"
@@ -25,22 +21,28 @@ appId: com.betelcode.app
       - extendedWaitUntil:
           visible:
             id: "tab-conversations"
-          timeout: 1000
+          timeout: 2000
           optional: true
 - tapOn:
     id: "tab-conversations"
 - repeat:
-    times: 6
+    times: 10
     commands:
       - tapOn:
           text: "Not Now"
           optional: true
+      - tapOn:
+          id: "tab-conversations"
+          optional: true
       - extendedWaitUntil:
           visible:
             id: "conversation-item"
-          timeout: 1000
+          timeout: 2000
           optional: true
 - takeScreenshot: 01_conversations
+- tapOn:
+    text: "Not Now"
+    optional: true
 - tapOn:
     id: "conversation-item"
 - repeat:
