@@ -27,8 +27,6 @@ import { useHaptic, useScaleAnimation, useTabBarHeight } from '@/utils';
 import { TabParamList } from './AppTabs';
 import { useAppSelector } from '@/hooks';
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
-
 const tabExitSpringConfig = { damping: 20, stiffness: 360, mass: 1 };
 const tabEnterSpringConfig = { damping: 30, stiffness: 360, mass: 1 };
 
@@ -75,12 +73,17 @@ const TabBarBackground = (props: TabBarBackgroundProps) => {
     };
   });
 
-  return Platform.OS === 'ios' ? (
-    <AnimatedBlurView {...{ blurAmount, blurType }} style={[style, animatedTabBarStyle]}>
+  return (
+    <Animated.View style={[style, animatedTabBarStyle]}>
+      {Platform.OS === 'ios' && (
+        <BlurView
+          blurAmount={blurAmount}
+          blurType={blurType}
+          style={tailwind.style('absolute inset-0')}
+        />
+      )}
       {children}
-    </AnimatedBlurView>
-  ) : (
-    <Animated.View style={[style, animatedTabBarStyle]}>{children}</Animated.View>
+    </Animated.View>
   );
 };
 
