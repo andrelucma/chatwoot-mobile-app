@@ -14,6 +14,9 @@ import { navigationRef } from '@/utils/navigationUtils';
 import { findConversationLinkFromPush, findNotificationFromFCM } from '@/utils/pushUtils';
 import { extractConversationIdFromUrl } from '@/utils/conversationUtils';
 import { useAppSelector } from '@/hooks';
+import { store } from '@/store';
+import { selectLoggedIn } from '@/store/auth/authSelectors';
+import { settingsActions } from '@/store/settings/settingsActions';
 import { selectInstallationUrl, selectLocale } from '@/store/settings/settingsSelectors';
 import { SSO_CALLBACK_URL } from '@/constants';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -174,6 +177,15 @@ export const AppNavigationContainer = () => {
       // Listen to incoming links from deep linking
       const subscription = Linking.addEventListener('url', onReceiveURL);
 
+      // FCM can rotate the device token at any time (reinstall, restored backup, token
+      // expiry). Re-register it immediately instead of waiting for the next cold start,
+      // otherwise the server keeps sending push to a token nobody is listening on anymore.
+      const unsubscribeTokenRefresh = messaging().onTokenRefresh(() => {
+        if (selectLoggedIn(store.getState())) {
+          store.dispatch(settingsActions.saveDeviceDetails());
+        }
+      });
+
       //onNotificationOpenedApp: When the application is running, but in the background.
       const unsubscribeNotification = messaging().onNotificationOpenedApp(message => {
         if (message) {
@@ -193,6 +205,7 @@ export const AppNavigationContainer = () => {
       return () => {
         subscription.remove();
         unsubscribeNotification();
+        unsubscribeTokenRefresh();
       };
     },
   };
