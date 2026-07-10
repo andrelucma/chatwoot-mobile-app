@@ -2,30 +2,29 @@ const { withPlugins, createRunOncePlugin, withDangerousMod } = require('@expo/co
 const fs = require('fs');
 const path = require('path');
 
-// Xcode 26's clang enforces C++20 `consteval` evaluation even though RN
-// targets C++17, which breaks the `fmt` pod (transitive dep of RCT-Folly):
-// "call to consteval function ... is not a constant expression" in
-// fmt/format-inl.h. `-DFMT_CONSTEVAL=` alone doesn't help because fmt's own
-// header later does `#define FMT_CONSTEVAL consteval` unconditionally,
-// silently overriding a command-line define. FMT_USE_CONSTEVAL is the guard
-// fmt checks with `#ifndef` before that auto-detection, so setting it to 0
-// is what actually disables consteval and falls back to `constexpr`.
+// Xcode 26's clang defines __cpp_consteval, so fmt (transitive dep of
+// RCT-Folly, pinned to 11.0.2) computes FMT_USE_CONSTEVAL=1 and hits a
+// compiler bug: "call to consteval function ... is not a constant
+// expression" in fmt/format-inl.h. A -DFMT_USE_CONSTEVAL=0 build setting
+// does NOT work around this: fmt/include/fmt/base.h computes and
+// `#define`s FMT_USE_CONSTEVAL itself with no `#ifndef` guard, so it
+// silently clobbers any command-line override. The only reliable fix is
+// patching the pod's header text directly to force the value to 0 right
+// before it's consumed.
 const FMT_CONSTEVAL_FIX = `
-    installer.pods_project.targets.each do |target|
-      if target.name == 'fmt'
-        target.build_configurations.each do |config|
-          defs = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || ['$(inherited)']
-          defs = [defs] unless defs.is_a?(Array)
-          defs << 'FMT_USE_CONSTEVAL=0' unless defs.include?('FMT_USE_CONSTEVAL=0')
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = defs
-        end
+    fmt_header = File.join(installer.pods_project.path.dirname, 'fmt', 'include', 'fmt', 'base.h')
+    if File.exist?(fmt_header)
+      contents = File.read(fmt_header)
+      unless contents.include?('#undef FMT_USE_CONSTEVAL')
+        contents = contents.sub(/^#if FMT_USE_CONSTEVAL$/, "#undef FMT_USE_CONSTEVAL\\n#define FMT_USE_CONSTEVAL 0\\n#if FMT_USE_CONSTEVAL")
+        File.write(fmt_header, contents)
       end
     end
 `;
 
 function addFmtConstevalFix(podfilePath) {
   let contents = fs.readFileSync(podfilePath, 'utf8');
-  if (!contents.includes('FMT_USE_CONSTEVAL=0')) {
+  if (!contents.includes('#undef FMT_USE_CONSTEVAL')) {
     contents = contents.replace(
       /post_install do \|installer\|/,
       `post_install do |installer|\n${FMT_CONSTEVAL_FIX}`,
