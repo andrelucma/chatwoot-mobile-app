@@ -4,7 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   return {
     name: 'Betel Code',
     slug: process.env.EXPO_PUBLIC_APP_SLUG || 'chatwoot-mobile',
-    version: '4.6.0',
+    version: '4.7.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
@@ -17,8 +17,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       enableFullScreenImage_legacy: true,
     },
     ios: {
-      supportsTablet: true,
+      supportsTablet: false,
       bundleIdentifier: 'com.betelcode.app',
+      buildNumber: '1',
       infoPlist: {
         NSCameraUsageDescription:
           'This app requires access to the camera to upload images and videos.',
