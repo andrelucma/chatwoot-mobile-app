@@ -101,8 +101,8 @@ export const AgentStatusItem = memo(({ agent }: AgentStatusItemProps) => {
             <Animated.Text
               numberOfLines={1}
               style={tailwind.style(
-                'text-[12px] font-inter-normal-20 leading-[16px] mt-[4px]',
-                isDark ? 'text-grayDark-500' : 'text-gray-400',
+                'text-[12px] font-inter-medium-24 leading-[16px] mt-[4px]',
+                isDark ? 'text-grayDark-800' : 'text-gray-600',
               )}>
               {timeLine}
             </Animated.Text>
