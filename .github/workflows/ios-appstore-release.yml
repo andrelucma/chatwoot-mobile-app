@@ -5,13 +5,22 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       EXPO_PUBLIC_PROJECT_ID: 361b27c1-4d2d-4a5f-b231-00456d27d148
       EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE: ./GoogleService-Info.plist
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Select newest available Xcode
+        run: |
+          echo "Available Xcode installations:"
+          ls /Applications | grep -i xcode || true
+          LATEST_XCODE=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          echo "Selecting: $LATEST_XCODE"
+          sudo xcode-select -s "$LATEST_XCODE"
+          xcodebuild -version
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
