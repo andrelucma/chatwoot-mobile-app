@@ -1,0 +1,123 @@
+name: iOS Ad Hoc Native Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-sign:
+    runs-on: macos-15
+    env:
+      EXPO_PUBLIC_PROJECT_ID: 361b27c1-4d2d-4a5f-b231-00456d27d148
+      EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE: ./GoogleService-Info.plist
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Write GoogleService-Info.plist
+        run: echo "$IOS_GOOGLE_SERVICES_PLIST" > GoogleService-Info.plist
+        env:
+          IOS_GOOGLE_SERVICES_PLIST: ${{ secrets.IOS_GOOGLE_SERVICES_PLIST }}
+
+      - name: Write App Store Connect API key
+        run: echo "$ASC_API_KEY" > AuthKey.p8
+        env:
+          ASC_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+
+      - name: Prebuild iOS project
+        run: npx expo prebuild --platform ios --clean
+
+      - name: List generated iOS project (diagnostics)
+        run: |
+          echo "--- ios/ contents ---"
+          ls -la ios
+          echo "--- workspace schemes ---"
+          WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" | head -1)
+          echo "Workspace: $WORKSPACE"
+          xcodebuild -list -workspace "$WORKSPACE" -json || true
+
+      - name: Determine workspace and scheme
+        id: xcode
+        run: |
+          WORKSPACE=$(find ios -maxdepth 1 -name "*.xcworkspace" | head -1)
+          SCHEME=$(xcodebuild -list -workspace "$WORKSPACE" -json | node -e "
+            let data = '';
+            process.stdin.on('data', d => data += d);
+            process.stdin.on('end', () => {
+              const json = JSON.parse(data);
+              console.log(json.workspace.schemes.find(s => !s.includes('Tests')) || json.workspace.schemes[0]);
+            });
+          ")
+          echo "workspace=$WORKSPACE" >> "$GITHUB_OUTPUT"
+          echo "scheme=$SCHEME" >> "$GITHUB_OUTPUT"
+          echo "Workspace: $WORKSPACE / Scheme: $SCHEME"
+
+      - name: Write export options plist
+        run: |
+          cat > exportOptions.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>teamID</key>
+            <string>BUX5F295HS</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -workspace "${{ steps.xcode.outputs.workspace }}" \
+            -scheme "${{ steps.xcode.outputs.scheme }}" \
+            -configuration Release \
+            -archivePath build/App.xcarchive \
+            -destination "generic/platform=iOS" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$PWD/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$PWD/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+
+      - name: Clean up secrets from disk
+        if: always()
+        run: rm -f AuthKey.p8 GoogleService-Info.plist
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-adhoc-ipa
+          path: build/ipa/*.ipa
+          retention-days: 7
