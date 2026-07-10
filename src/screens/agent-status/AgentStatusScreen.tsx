@@ -99,8 +99,8 @@ const AgentStatusScreen = () => {
         <Animated.View style={tailwind.style('w-[6px] h-[6px] rounded-full', section.dotColor)} />
         <Animated.Text
           style={tailwind.style(
-            'text-[12px] font-inter-medium-24 tracking-[0.32px] uppercase',
-            isDark ? 'text-grayDark-600' : 'text-gray-500',
+            'text-[12px] font-inter-580-24 tracking-[0.32px] uppercase',
+            isDark ? 'text-grayDark-900' : 'text-gray-800',
           )}>
           {section.title} · {section.data.length}
         </Animated.Text>

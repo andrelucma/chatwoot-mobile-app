@@ -13,21 +13,21 @@ const STATUS_STYLES: Record<
   { dot: string; badgeBg: string; badgeText: string; accent: string }
 > = {
   online: {
-    dot: 'bg-green-800',
-    badgeBg: 'bg-green-100',
-    badgeText: 'text-green-900',
+    dot: 'bg-white',
+    badgeBg: 'bg-green-800',
+    badgeText: 'text-white',
     accent: 'bg-green-600',
   },
   busy: {
-    dot: 'bg-amber-800',
-    badgeBg: 'bg-amber-100',
-    badgeText: 'text-amber-900',
+    dot: 'bg-white',
+    badgeBg: 'bg-amber-900',
+    badgeText: 'text-white',
     accent: 'bg-amber-600',
   },
   offline: {
     dot: 'bg-gray-600',
-    badgeBg: 'bg-gray-100',
-    badgeText: 'text-gray-700',
+    badgeBg: 'bg-gray-200',
+    badgeText: 'text-gray-900',
     accent: 'bg-gray-300',
   },
 };
@@ -78,12 +78,15 @@ export const AgentStatusItem = memo(({ agent }: AgentStatusItemProps) => {
               </Animated.Text>
               <Animated.View
                 style={tailwind.style(
-                  'flex-row items-center gap-1 px-2 py-[3px] rounded-full',
+                  'flex-row items-center gap-1 px-2 py-[4px] rounded-full',
                   statusStyle.badgeBg,
                 )}>
                 <View style={tailwind.style('w-[6px] h-[6px] rounded-full', statusStyle.dot)} />
                 <Animated.Text
-                  style={tailwind.style('text-[11px] font-inter-medium-24', statusStyle.badgeText)}>
+                  style={tailwind.style(
+                    'text-[11px] font-inter-580-24',
+                    statusStyle.badgeText,
+                  )}>
                   {i18n.t(`AVAILABILITY.${status.toUpperCase()}`)}
                 </Animated.Text>
               </Animated.View>
@@ -93,7 +96,7 @@ export const AgentStatusItem = memo(({ agent }: AgentStatusItemProps) => {
                 numberOfLines={1}
                 style={tailwind.style(
                   'text-[13px] font-inter-420-20 leading-[18px] mt-[2px]',
-                  isDark ? 'text-grayDark-800' : 'text-gray-600',
+                  isDark ? 'text-grayDark-900' : 'text-gray-800',
                 )}>
                 {email}
               </Animated.Text>
@@ -101,8 +104,8 @@ export const AgentStatusItem = memo(({ agent }: AgentStatusItemProps) => {
             <Animated.Text
               numberOfLines={1}
               style={tailwind.style(
-                'text-[12px] font-inter-medium-24 leading-[16px] mt-[4px]',
-                isDark ? 'text-grayDark-800' : 'text-gray-600',
+                'text-[12px] font-inter-580-24 leading-[16px] mt-[4px]',
+                isDark ? 'text-grayDark-900' : 'text-gray-800',
               )}>
               {timeLine}
             </Animated.Text>
