@@ -5,16 +5,18 @@ const path = require('path');
 // Xcode 26's clang enforces C++20 `consteval` evaluation even though RN
 // targets C++17, which breaks the `fmt` pod (transitive dep of RCT-Folly):
 // "call to consteval function ... is not a constant expression" in
-// fmt/format-inl.h. Forcing FMT_CONSTEVAL to be empty makes fmt fall back to
-// `constexpr`, which compiles fine. See fmtlib/fmt and community RN issues
-// about this exact error under newer Xcode toolchains.
+// fmt/format-inl.h. `-DFMT_CONSTEVAL=` alone doesn't help because fmt's own
+// header later does `#define FMT_CONSTEVAL consteval` unconditionally,
+// silently overriding a command-line define. FMT_USE_CONSTEVAL is the guard
+// fmt checks with `#ifndef` before that auto-detection, so setting it to 0
+// is what actually disables consteval and falls back to `constexpr`.
 const FMT_CONSTEVAL_FIX = `
     installer.pods_project.targets.each do |target|
       if target.name == 'fmt'
         target.build_configurations.each do |config|
           defs = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || ['$(inherited)']
           defs = [defs] unless defs.is_a?(Array)
-          defs << 'FMT_CONSTEVAL=' unless defs.include?('FMT_CONSTEVAL=')
+          defs << 'FMT_USE_CONSTEVAL=0' unless defs.include?('FMT_USE_CONSTEVAL=0')
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = defs
         end
       end
@@ -23,7 +25,7 @@ const FMT_CONSTEVAL_FIX = `
 
 function addFmtConstevalFix(podfilePath) {
   let contents = fs.readFileSync(podfilePath, 'utf8');
-  if (!contents.includes('FMT_CONSTEVAL=')) {
+  if (!contents.includes('FMT_USE_CONSTEVAL=0')) {
     contents = contents.replace(
       /post_install do \|installer\|/,
       `post_install do |installer|\n${FMT_CONSTEVAL_FIX}`,

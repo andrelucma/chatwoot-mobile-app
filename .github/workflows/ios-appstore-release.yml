@@ -51,9 +51,6 @@ jobs:
       - name: Prebuild iOS project
         run: npx expo prebuild --platform ios --clean
 
-      - name: Debug - show fmt consteval fix in Podfile
-        run: grep -n -B2 -A10 "FMT_CONSTEVAL" ios/Podfile || echo "FMT_CONSTEVAL NOT FOUND IN PODFILE"
-
       - name: Determine workspace and scheme
         id: xcode
         run: |
