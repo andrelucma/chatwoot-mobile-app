@@ -92,7 +92,9 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath "$PWD/AuthKey.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="BUX5F295HS" \
+            CODE_SIGN_STYLE="Automatic"
         env:
           ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
