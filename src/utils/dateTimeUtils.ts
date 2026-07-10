@@ -1,4 +1,4 @@
-import { fromUnixTime, formatDistanceToNow, isSameDay, format } from 'date-fns';
+import { fromUnixTime, formatDistanceToNow, isSameDay, format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import i18n from '@/i18n';
 import { UnixTimestamp } from '@/types';
@@ -38,6 +38,23 @@ export const unixTimestampToReadableTime = (unixTimestamp: number) => {
   const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
 
   return `${formattedHours}:${minutes} ${ampm}`;
+};
+
+export const formatIsoDateTime = (isoString: string) => {
+  const dateObj = parseISO(isoString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const time = format(dateObj, 'HH:mm');
+
+  if (isSameDay(dateObj, today)) {
+    return `${i18n.t('CONVERSATION.TODAY')} ${i18n.t('AGENT_STATUS.AT_TIME', { time })}`;
+  }
+  if (isSameDay(dateObj, yesterday)) {
+    return `${i18n.t('CONVERSATION.YESTERDAY')} ${i18n.t('AGENT_STATUS.AT_TIME', { time })}`;
+  }
+  return `${format(dateObj, 'dd/MM')} ${i18n.t('AGENT_STATUS.AT_TIME', { time })}`;
 };
 
 export const messageStamp = ({

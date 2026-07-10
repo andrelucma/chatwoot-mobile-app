@@ -19,6 +19,9 @@ export const userStatusList = [
   { statusColor: 'bg-gray-800', status: 'offline' },
 ];
 
+// Maintenance/technical accounts excluded from the agent status list
+export const MAINTENANCE_AGENT_EMAILS = ['andrelucma@gmail.com', 'bot@betelcode.com.br'];
+
 export const AVAILABILITY_STATUS_LIST = [
   { statusColor: 'bg-green-800', status: 'online' },
   { statusColor: 'bg-yellow-800', status: 'busy' },
