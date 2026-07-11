@@ -14,4 +14,6 @@ export interface Agent {
   role?: UserRole;
   thumbnail?: string | null;
   type?: string;
+  currentSignInAt?: string | null;
+  lastActivityAt?: string | null;
 }

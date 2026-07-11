@@ -347,6 +347,15 @@
     "BUSY": "Busy",
     "OFFLINE": "Offline"
   },
+  "AGENT_STATUS": {
+    "TITLE": "Agent Status",
+    "AGENTS_COUNT": "agents",
+    "AT_TIME": "at {{time}}",
+    "LOGIN_LABEL": "Login:",
+    "LAST_ACTIVITY_LABEL": "Last activity:",
+    "NEVER_ACTIVE": "No activity recorded yet",
+    "EMPTY_STATE": "No agents found"
+  },
   "NOTIFICATION_PREFERENCE": {
     "TITLE": "Notification Preferences",
     "EMAIL": "Email Notifications",

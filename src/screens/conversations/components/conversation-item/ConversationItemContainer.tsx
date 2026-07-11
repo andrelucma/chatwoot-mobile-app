@@ -176,6 +176,7 @@ export const ConversationItemContainer = memo((props: ConversationItemContainerP
       handleLongPress={onLongPressAction}
       handlePress={onPressAction}
       triggerOverswipeOnFlick
+      testID="conversation-item"
       {...{ index, openedRowIndex }}>
       <ConversationItem {...viewProps} />
     </Swipeable>

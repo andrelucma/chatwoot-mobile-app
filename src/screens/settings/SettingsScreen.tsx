@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StatusBar, Text, Platform, Pressable } from 'react-native';
+import { StatusBar, Text, Platform, Pressable, useColorScheme } from 'react-native';
 import Animated from 'react-native-reanimated';
 // import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -76,6 +76,8 @@ const buildNumber = Application.nativeBuildVersion;
 const appVersionDetails = buildNumber ? `${appVersion} (${buildNumber})` : appVersion;
 
 const SettingsScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const availabilityStatus =
@@ -275,57 +277,51 @@ const SettingsScreen = () => {
   ];
 
   return (
-    <SafeAreaView style={tailwind.style('flex-1 bg-white font-inter-normal-20')}>
+    <SafeAreaView style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-blue-800'} font-inter-normal-20`)}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : '#1e40af'}
+        barStyle="light-content"
       />
       <SettingsHeader />
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}>
-        <Animated.View style={tailwind.style('flex justify-center items-center pt-4 gap-4')}>
-          <Animated.View>
-            <UserAvatar src={avatarUrl} name={name} status={availabilityStatus} />
-            <Animated.View
-              style={tailwind.style(
-                'absolute border-[2px] border-white rounded-full -bottom-[2px] right-[10px]',
-              )}></Animated.View>
-          </Animated.View>
-          <Animated.View style={tailwind.style('flex flex-col items-center gap-1')}>
-            <Animated.Text style={tailwind.style('text-[22px] font-inter-580-24 text-gray-950')}>
+
+        {/* Profile hero section */}
+        <Animated.View
+          style={tailwind.style(
+            'items-center pt-4 pb-8',
+            isDark ? 'bg-grayDark-100' : 'bg-blue-800',
+          )}>
+          <UserAvatar src={avatarUrl} name={name} status={availabilityStatus} />
+          <Animated.View style={tailwind.style('flex flex-col items-center gap-1 mt-3')}>
+            <Animated.Text style={tailwind.style('text-[21px] font-inter-580-24 text-white')}>
               {name}
             </Animated.Text>
             <Animated.Text
-              style={tailwind.style(
-                'text-[15px] font-inter-420-20 leading-[17.25px] text-gray-900',
-              )}>
+              style={tailwind.style('text-[14px] font-inter-420-20 text-blue-200')}>
               {email}
             </Animated.Text>
           </Animated.View>
         </Animated.View>
-        <Animated.View style={tailwind.style('pt-6')}>
+
+        {/* Content section — card emerges over blue */}
+        <Animated.View
+          style={tailwind.style(
+            'rounded-t-[28px] mt-[-20px] pt-6',
+            isDark ? 'bg-grayDark-100' : 'bg-gray-50',
+          )}>
           <SettingsList sectionTitle={i18n.t('SETTINGS.PREFERENCES')} list={preferencesList} />
+          <Animated.View style={tailwind.style('pt-6 mx-4 pb-2')}>
+            <Button
+              variant="secondary"
+              text={i18n.t('SETTINGS.LOGOUT')}
+              isDestructive
+              handlePress={onClickLogout}
+            />
+          </Animated.View>
         </Animated.View>
-        <Animated.View style={tailwind.style('pt-6')}>
-          <SettingsList sectionTitle={i18n.t('SETTINGS.SUPPORT')} list={supportList} />
-        </Animated.View>
-        <Animated.View style={tailwind.style('pt-6 mx-4')}>
-          <Button
-            variant="secondary"
-            text={i18n.t('SETTINGS.LOGOUT')}
-            isDestructive
-            handlePress={onClickLogout}
-          />
-        </Animated.View>
-        <Pressable
-          style={tailwind.style('p-4 items-center')}
-          onLongPress={() => debugActionsSheetRef.current?.present()}>
-          <Text style={tailwind.style('text-sm text-gray-700 ')}>
-            {`${chatwootInstance} ${appVersionDetails}`}
-          </Text>
-        </Pressable>
       </Animated.ScrollView>
       <BottomSheetModal
         ref={userAvailabilityStatusSheetRef}

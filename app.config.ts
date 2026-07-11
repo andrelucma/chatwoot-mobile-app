@@ -2,13 +2,13 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   return {
-    name: 'Chatwoot',
+    name: 'Betel Code',
     slug: process.env.EXPO_PUBLIC_APP_SLUG || 'chatwoot-mobile',
-    version: '4.6.0',
+    version: '4.7.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
-    userInterfaceStyle: 'light',
-    newArchEnabled: false,
+    userInterfaceStyle: 'automatic',
+    newArchEnabled: true,
     scheme: 'chatwootapp',
     splash: {
       image: './assets/splash.png',
@@ -17,8 +17,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       enableFullScreenImage_legacy: true,
     },
     ios: {
-      supportsTablet: true,
-      bundleIdentifier: 'com.chatwoot.app',
+      supportsTablet: false,
+      bundleIdentifier: 'com.betelcode.app',
+      buildNumber: '1',
       infoPlist: {
         NSCameraUsageDescription:
           'This app requires access to the camera to upload images and videos.',
@@ -37,10 +38,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: '#ffffff' },
-      package: 'com.chatwoot.app',
+      package: 'com.betelcode.app',
+      versionCode: 3,
       permissions: ['android.permission.CAMERA', 'android.permission.RECORD_AUDIO'],
       // Please use the relative path to the google-services.json file
-      googleServicesFile: process.env.EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE,
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON || process.env.EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE,
       intentFilters: [
         {
           action: 'VIEW',
@@ -72,7 +74,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         storybookEnabled: process.env.EXPO_STORYBOOK_ENABLED,
       },
     },
-    owner: 'chatwoot',
+    owner: 'andrelucma',
     plugins: [
       'expo-font',
       ['react-native-permissions', { iosPermissions: ['Camera', 'PhotoLibrary', 'MediaLibrary'] }],
@@ -100,6 +102,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         },
       ],
       './with-ffmpeg-pod.js',
+      './with-fmt-consteval-fix.js',
+      './with-android-release-signing.js',
     ],
     androidNavigationBar: { backgroundColor: '#ffffff' },
   };

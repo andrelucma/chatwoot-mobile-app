@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, Text, ViewStyle } from 'react-native';
+import { StyleProp, Text, ViewStyle, useColorScheme } from 'react-native';
 
 import { tailwind } from '@/theme';
 import { NativeView } from '@/components-next/native-components';
@@ -19,6 +19,7 @@ import { getPlainText } from '@/utils/messageFormatterUtils';
 type ConversationLastMessageProps = {
   numberOfLines: number;
   lastMessage: Message;
+  isUnread?: boolean;
 };
 
 export const ATTACHMENT_ICONS = {
@@ -64,10 +65,15 @@ const MessageType = ({ message, style }: { message: Message; style?: StyleProp<V
 const MessageContent = ({
   message,
   numberOfLines,
+  isUnread,
+  isDark,
 }: {
   message: Message;
   numberOfLines: number;
+  isUnread?: boolean;
+  isDark?: boolean;
 }) => {
+  const textStyle = `text-md flex-1 ${isUnread ? `font-inter-semibold-20 ${isDark ? 'text-grayDark-950' : 'text-gray-950'}` : `font-inter-420-20 ${isDark ? 'text-grayDark-700' : 'text-gray-600'}`} tracking-[0.32px] leading-[21px]`;
   const { contentAttributes } = message || {};
   const { email: { subject = '' } = {} } = contentAttributes || {};
 
@@ -83,9 +89,7 @@ const MessageContent = ({
         <Icon icon={<ImageAttachmentIcon />} />
         <Text
           numberOfLines={1}
-          style={tailwind.style(
-            'text-md flex-1 font-inter-420-20 tracking-[0.32px] leading-[21px] text-gray-900',
-          )}>
+          style={tailwind.style(textStyle)}>
           <MessageType message={message} style={tailwind.style('ml-1')} />
           {i18n.t(`CONVERSATION.ATTACHMENTS.image.CONTENT`)}
         </Text>
@@ -96,15 +100,11 @@ const MessageContent = ({
       <NativeView style={tailwind.style('flex-row gap-1 items-center')}>
         <Text
           numberOfLines={numberOfLines}
-          style={tailwind.style(
-            'text-md flex-1 font-inter-420-20 tracking-[0.3px] leading-[21px] text-gray-900',
-          )}>
+          style={tailwind.style(textStyle)}>
           <MessageType message={message} style={tailwind.style('ml-1')} />
           <Text
             numberOfLines={numberOfLines}
-            style={tailwind.style(
-              'text-md flex-1 font-inter-420-20 tracking-[0.3px] leading-[21px] text-gray-900',
-            )}>
+            style={tailwind.style(textStyle)}>
             {lastMessageContent}
           </Text>
         </Text>
@@ -117,29 +117,25 @@ const MessageContent = ({
         <MessageType message={message} />
         <Text
           numberOfLines={1}
-          style={tailwind.style(
-            'text-md flex-1 font-inter-420-20 tracking-[0.32px] leading-[21px] text-gray-900',
-          )}>
+          style={tailwind.style(textStyle)}>
           {i18n.t(`CONVERSATION.ATTACHMENTS.${lastMessageFileType}.CONTENT`)}
         </Text>
       </NativeView>
     );
   }
   return (
-    <Text
-      style={tailwind.style(
-        'text-md flex-1 font-inter-420-20 tracking-[0.32px] leading-[21px] text-gray-900',
-      )}>
+    <Text style={tailwind.style(textStyle)}>
       {i18n.t('CONVERSATION.NO_CONTENT')}
     </Text>
   );
 };
 
 export const ConversationLastMessage = (props: ConversationLastMessageProps) => {
-  const { numberOfLines, lastMessage } = props;
+  const isDark = useColorScheme() === 'dark';
+  const { numberOfLines, lastMessage, isUnread } = props;
   return (
     <NativeView style={tailwind.style('flex-1 flex-row gap-1 items-start')}>
-      <MessageContent message={lastMessage} numberOfLines={numberOfLines} />
+      <MessageContent message={lastMessage} numberOfLines={numberOfLines} isUnread={isUnread} isDark={isDark} />
     </NativeView>
   );
 };

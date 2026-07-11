@@ -11,6 +11,7 @@ import inboxSlice from '@/store/inbox/inboxSlice';
 import labelReducer from '@/store/label/labelSlice';
 import contactSlice from '@/store/contact/contactSlice';
 import assignableAgentSlice from '@/store/assignable-agent/assignableAgentSlice';
+import agentSlice from '@/store/agent/agentSlice';
 import conversationTypingSlice from '@/store/conversation/conversationTypingSlice';
 import notificationSlice from '@/store/notification/notificationSlice';
 import notificationFilterSlice from '@/store/notification/notificationFilterSlice';
@@ -41,6 +42,7 @@ export const appReducer = combineReducers({
   labels: labelReducer,
   inboxes: inboxSlice,
   assignableAgents: assignableAgentSlice,
+  agents: agentSlice,
   conversationTyping: conversationTypingSlice,
   notifications: notificationSlice,
   notificationFilter: notificationFilterSlice,

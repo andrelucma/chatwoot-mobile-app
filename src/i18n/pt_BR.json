@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "URL de instalação",
-    "DESCRIPTION": "Se você estiver usando uma instalação auto-hospedada do Chatwoot, insira o URL do servidor. Caso contrário, use app.chatwoot.com.",
+    "DESCRIPTION": "Insira o URL do servidor Betel Code.",
     "URL_ERROR": "Insira uma URL válida",
     "URL_REQUIRED": "URL é obrigatório",
     "CONNECT": "Conectar",
@@ -32,6 +32,10 @@
     "PASSWORD_ERROR": "Digite uma senha válida",
     "LOGIN": "Entrar",
     "LOGIN_LOADING": "Entrar...",
+    "LOGIN_VIA_SSO": "Entrar via SSO",
+    "SSO_AUTH_FAILED": "Autenticação SSO falhou. Verifique suas credenciais e tente novamente.",
+    "SSO_INVALID_RESPONSE": "Resposta SSO inválida. Por favor, tente novamente.",
+    "SSO_UNEXPECTED_ERROR": "Ocorreu um erro inesperado durante o login SSO. Por favor, tente novamente.",
     "FORGOT_PASSWORD": "Esqueceu sua senha?",
     "RESET_HERE": "Redefinir aqui",
     "NO_ACCOUNT": "Não possui uma conta?",
@@ -49,6 +53,24 @@
     "TITLE": "Esqueceu a Senha?",
     "SUB_TITLE": "Não se preocupe! Nós te protegemos",
     "API_SUCCESS": "O link de redefinição de senha foi enviado para o seu endereço de e-mail"
+  },
+  "MFA": {
+    "TITLE": "Autenticação de Dois Fatores",
+    "TABS": {
+      "AUTHENTICATOR_APP": "App Autenticador",
+      "BACKUP_CODE": "Código de Backup"
+    },
+    "INSTRUCTIONS": {
+      "AUTHENTICATOR": "Digite o código de 6 dígitos do seu app autenticador",
+      "BACKUP": "Digite um dos seus códigos de backup"
+    },
+    "PLACEHOLDERS": {
+      "BACKUP_CODE": "Digite o código de backup"
+    },
+    "BUTTONS": {
+      "VERIFY": "Verificar",
+      "VERIFYING": "Verificando..."
+    }
   },
   "CONVERSATION": {
     "HEADER": {
@@ -153,6 +175,15 @@
     "SNOOZE_UNTIL_NEXT_WEEK": "Até a próxima semana",
     "SNOOZE": "Adiar conversa",
     "CHANGE_PRIORITY": "Alterar prioridade",
+    "NONE": "Nenhum",
+    "SELECT_ACTION": "Selecionar ação",
+    "CONVERSATION_ACTIONS": "Ações da conversa",
+    "STATUS_ACTIONS": {
+      "OPEN": "Aberto",
+      "PENDING": "Pendente",
+      "SNOOZE": "Adiar",
+      "RESOLVE": "Resolver"
+    },
     "MESSAGES": "Mensagens",
     "UNDEFINED_VARIABLES_TITLE": "Variáveis não definidas",
     "UNDEFINED_VARIABLES_CLOSE": "Fechar",
@@ -216,7 +247,8 @@
     "LONG_PRESS_ACTIONS": {
       "COPY": "Copiar",
       "REPLY": "Responder",
-      "DELETE_MESSAGE": "Apagar mensagem"
+      "DELETE_MESSAGE": "Apagar mensagem",
+      "TRANSLATE": "Traduzir"
     },
     "EMAIL_HEADER": {
       "FROM": "De",
@@ -226,6 +258,10 @@
       "SUBJECT": "Assunto",
       "EXPAND": "Expandir e-mail"
     },
+    "TRANSLATE_SUCCESS": "Mensagem traduzida",
+    "TRANSLATE_ERROR": "Falha ao traduzir mensagem",
+    "VIEW_ORIGINAL": "Ver original",
+    "VIEW_TRANSLATED": "Ver traduzido",
     "ACTIONS": {
       "ASSIGNEE": {
         "EMPTY": "Não atribuídas",
@@ -317,7 +353,16 @@
   "AVAILABILITY": {
     "ONLINE": "Online",
     "BUSY": "Ocupado",
-    "OFFLINE": "Offline"
+    "OFFLINE": "Indisponível"
+  },
+  "AGENT_STATUS": {
+    "TITLE": "Status dos Agentes",
+    "AGENTS_COUNT": "agentes",
+    "AT_TIME": "às {{time}}",
+    "LOGIN_LABEL": "Login:",
+    "LAST_ACTIVITY_LABEL": "Última atividade:",
+    "NEVER_ACTIVE": "Nenhuma atividade registrada ainda",
+    "EMPTY_STATE": "Nenhum agente encontrado"
   },
   "NOTIFICATION_PREFERENCE": {
     "TITLE": "Preferências de Notificação",
@@ -410,8 +455,8 @@
   },
   "SERVER_UPGRADE": {
     "TITLE": "Atualização do servidor necessária",
-    "WARNING_FOR_AGENT": "Parece que você está usando um servidor Chatwoot não suportado para o seu aplicativo móvel. Por favor, entre em contato com seu administrador para atualizar o servidor Chatwoot.",
-    "WARNING_FOR_ADMIN": "Parece que você está usando um servidor Chatwoot não suportado para o seu aplicativo móvel. Fazer o upgrade para a versão do servidor %{minimumVersion} ou posterior é necessário."
+    "WARNING_FOR_AGENT": "Parece que você está usando um servidor Betel Code não suportado para o seu aplicativo móvel. Por favor, entre em contato com seu administrador para atualizar o servidor Betel Code.",
+    "WARNING_FOR_ADMIN": "Parece que você está usando um servidor Betel Code não suportado para o seu aplicativo móvel. Fazer o upgrade para a versão do servidor %{minimumVersion} ou posterior é necessário."
   },
   "EXIT": {
     "TITLE": "Sair",
@@ -445,6 +490,23 @@
       "HIDE": "Esconder linhas de {count}"
     }
   },
+  "SEARCH": {
+    "PLACEHOLDER": "Digite 2 ou mais caracteres para pesquisar",
+    "HINT": "Pesquise por ID da conversa, e-mail, telefone ou mensagens para melhores resultados.",
+    "ALL_RESULTS": "Todos os resultados",
+    "RECENT_SEARCHES": "Pesquisas recentes",
+    "CLEAR_ALL": "Limpar tudo",
+    "VIEW_MORE": "Ver mais",
+    "TAP_TO_RETRY": "Toque para tentar novamente",
+    "NO_RESULTS": "Nenhum {{sectionLabel}} encontrado para '{{searchQuery}}'",
+    "ERROR_CANCELLED": "Não foi possível carregar os resultados.",
+    "ERROR_GENERIC": "Algo deu errado. Por favor, tente novamente.",
+    "SECTIONS": {
+      "CONTACTS": "Contatos",
+      "CONVERSATIONS": "Conversas",
+      "MESSAGES": "Mensagens"
+    }
+  },
   "MACRO": {
     "TITLE": "Macros",
     "SELECT_MACRO": "Selecionar macro",
@@ -454,5 +516,71 @@
     "EXECUTION_SUCCESS": "Macro executada com sucesso",
     "EXECUTION_ERROR": "Falha ao executar macro",
     "NO_MACROS": "Nenhuma macro encontrada"
+  },
+  "COPILOT": {
+    "IMPROVE_REPLY": "Melhorar resposta",
+    "CHANGE_TONE": "Alterar tom",
+    "FIX_GRAMMAR": "Corrigir gramática",
+    "SUGGEST_REPLY": "Sugerir resposta",
+    "SUMMARIZE": "Resumir conversa",
+    "THINKING": "Copiloto está pensando",
+    "FOLLOW_UP_PLACEHOLDER": "Envie prompts adicionais e perguntas de acompanhamento",
+    "SELECT_TONE": "Selecionar tom",
+    "TONE_PROFESSIONAL": "Profissional",
+    "TONE_FRIENDLY": "Amigável",
+    "TONE_STRAIGHTFORWARD": "Direto",
+    "TONE_CASUAL": "Casual",
+    "TONE_CONFIDENT": "Confiante",
+    "GENERATION_FAILED": "Falha ao gerar conteúdo. Por favor, tente novamente.",
+    "FOLLOW_UP_FAILED": "Falha ao enviar acompanhamento. Por favor, tente novamente."
+  },
+  "CHAT": {
+    "TEMPLATE_SENT": "Mensagem de template enviada"
+  },
+  "CONTACTS": {
+    "TITLE": "Contatos",
+    "SEARCH_PLACEHOLDER": "Buscar por nome, e-mail ou telefone",
+    "NEW_CONTACT": "Novo contato",
+    "EDIT_CONTACT": "Editar contato",
+    "EMPTY_STATE": "Nenhum contato ainda",
+    "EMPTY_SEARCH": "Nenhum resultado encontrado",
+    "EDIT": "Editar",
+    "DELETE": "Excluir",
+    "CANCEL": "Cancelar",
+    "SAVE": "Salvar",
+    "SAVING": "Salvando...",
+    "CONTACT": "Contato",
+    "NAME": "Nome",
+    "NAME_PLACEHOLDER": "Nome completo",
+    "EMAIL": "E-mail",
+    "EMAIL_PLACEHOLDER": "email@exemplo.com",
+    "PHONE": "Telefone",
+    "PHONE_PLACEHOLDER": "+55 11 99999-9999",
+    "COMPANY": "Empresa",
+    "COMPANY_PLACEHOLDER": "Nome da empresa",
+    "LOCATION": "Localização",
+    "LOCATION_PLACEHOLDER": "Cidade, País",
+    "DELETE_CONFIRM_TITLE": "Excluir contato",
+    "DELETE_CONFIRM_MESSAGE": "Tem certeza que deseja excluir este contato? Essa ação não pode ser desfeita.",
+    "NEW_CONVERSATION": "Nova conversa",
+    "CLOSE_LIST": "Fechar",
+    "SELECT_INBOX": "Selecionar canal",
+    "NO_INBOXES": "Nenhum canal disponível para este contato",
+    "INITIAL_MESSAGE": "Mensagem inicial",
+    "INITIAL_MESSAGE_PLACEHOLDER": "Digite uma mensagem de abertura (opcional)",
+    "START_CONVERSATION": "Iniciar conversa",
+    "LOADING": "Carregando...",
+    "ERROR": "Erro",
+    "SAVE_ERROR": "Não foi possível salvar o contato. Verifique os dados e tente novamente.",
+    "DELETE_ERROR": "Não foi possível excluir o contato.",
+    "INBOXES_LOAD_ERROR": "Não foi possível carregar os canais disponíveis.",
+    "CONVERSATION_CREATE_ERROR": "Não foi possível criar a conversa.",
+    "NAME_REQUIRED": "O nome do contato é obrigatório.",
+    "CONTACTS_COUNT": "contatos",
+    "EMPTY_STATE_HINT": "Toque em + para adicionar um contato",
+    "PHONE_FORMAT_ERROR": "O telefone deve estar no formato internacional (ex: +5511999999999).",
+    "SELECT_TEMPLATE": "Selecionar modelo",
+    "SELECT_TEMPLATE_REQUIRED": "Selecione um modelo para iniciar a conversa pelo WhatsApp.",
+    "NO_TEMPLATES": "Nenhum modelo disponível para este canal."
   }
 }

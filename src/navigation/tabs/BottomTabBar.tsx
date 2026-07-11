@@ -12,6 +12,10 @@ import { RouteProp } from '@react-navigation/native';
 import { selectCurrentState } from '@/store/conversation/conversationHeaderSlice';
 
 import {
+  AgentStatusIconFilled,
+  AgentStatusIconOutline,
+  ContactsIconFilled,
+  ContactsIconOutline,
   ConversationIconFilled,
   ConversationIconOutline,
   InboxIconFilled,
@@ -24,8 +28,6 @@ import { useHaptic, useScaleAnimation, useTabBarHeight } from '@/utils';
 
 import { TabParamList } from './AppTabs';
 import { useAppSelector } from '@/hooks';
-
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const tabExitSpringConfig = { damping: 20, stiffness: 360, mass: 1 };
 const tabEnterSpringConfig = { damping: 30, stiffness: 360, mass: 1 };
@@ -41,6 +43,10 @@ const TabBarIcons = ({ focused, route }: TabBarIconsProps) => {
       return focused ? <ConversationIconFilled /> : <ConversationIconOutline />;
     case 'Inbox':
       return focused ? <InboxIconFilled /> : <InboxIconOutline />;
+    case 'Contacts':
+      return focused ? <ContactsIconFilled /> : <ContactsIconOutline />;
+    case 'AgentStatus':
+      return focused ? <AgentStatusIconFilled /> : <AgentStatusIconOutline />;
     case 'Settings':
       return focused ? <SettingsIconFilled /> : <SettingsIconOutline />;
   }
@@ -71,12 +77,17 @@ const TabBarBackground = (props: TabBarBackgroundProps) => {
     };
   });
 
-  return Platform.OS === 'ios' ? (
-    <AnimatedBlurView {...{ blurAmount, blurType }} style={[style, animatedTabBarStyle]}>
+  return (
+    <Animated.View style={[style, animatedTabBarStyle]}>
+      {Platform.OS === 'ios' && (
+        <BlurView
+          blurAmount={blurAmount}
+          blurType={blurType}
+          style={tailwind.style('absolute inset-0')}
+        />
+      )}
       {children}
-    </AnimatedBlurView>
-  ) : (
-    <Animated.View style={[style, animatedTabBarStyle]}>{children}</Animated.View>
+    </Animated.View>
   );
 };
 
@@ -155,13 +166,13 @@ export const BottomTabBar = ({ state, descriptors, navigation }: BottomTabBarPro
       style={Platform.select({
         ios: [
           tailwind.style(
-            'flex flex-row absolute w-full bottom-0 pl-[72px] pr-[71px] pt-[11px] pb-8 bg-[#00000009]',
+            'flex flex-row absolute w-full bottom-0 pl-[20px] pr-[20px] pt-[11px] pb-8 bg-white/90',
             `h-[${tabBarHeight}px]`,
           ),
         ],
         android: [
           tailwind.style(
-            'flex flex-row absolute w-full bottom-0 pl-[72px] pr-[71px] py-[11px] bg-white',
+            'flex flex-row absolute w-full bottom-0 pl-[20px] pr-[20px] py-[11px] bg-white',
             `h-[${tabBarHeight}px]`,
           ),
         ],

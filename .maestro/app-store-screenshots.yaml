@@ -1,0 +1,69 @@
+appId: com.betelcode.app
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "login-email-input"
+    timeout: 15000
+- takeScreenshot: 01_login
+- tapOn:
+    id: "login-email-input"
+- inputText: "${DEMO_EMAIL}"
+- hideKeyboard
+- tapOn:
+    id: "login-password-input"
+- inputText: "${DEMO_PASSWORD}"
+- hideKeyboard
+- tapOn:
+    id: "login-submit-button"
+- repeat:
+    times: 20
+    commands:
+      - tapOn:
+          text: "Not Now"
+          optional: true
+      - tapOn:
+          point: "43%,57%"
+          optional: true
+      - extendedWaitUntil:
+          visible:
+            id: "tab-conversations"
+          timeout: 2000
+          optional: true
+- tapOn:
+    text: "Not Now"
+    optional: true
+- tapOn:
+    point: "43%,57%"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 02_inbox
+- repeat:
+    times: 8
+    commands:
+      - tapOn:
+          text: "Not Now"
+          optional: true
+      - tapOn:
+          id: "tab-conversations"
+          optional: true
+      - waitForAnimationToEnd
+- tapOn:
+    text: "Not Now"
+    optional: true
+- takeScreenshot: 03_conversations
+- repeat:
+    times: 8
+    commands:
+      - tapOn:
+          text: "Not Now"
+          optional: true
+      - tapOn:
+          id: "tab-settings"
+          optional: true
+      - waitForAnimationToEnd
+- tapOn:
+    text: "Not Now"
+    optional: true
+- takeScreenshot: 04_settings

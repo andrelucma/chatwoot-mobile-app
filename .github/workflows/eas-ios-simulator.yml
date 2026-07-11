@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      build-url: ${{ steps.eas-build.outputs.build-url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +32,91 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build iOS Simulator
-        run: eas build --platform ios --profile simulator --non-interactive
+        id: eas-build
+        run: |
+          eas build --platform ios --profile simulator --non-interactive --wait --json > eas-build-output.json
+          BUILD_URL=$(jq -r '.[0].artifacts.buildUrl' eas-build-output.json)
+          echo "build-url=$BUILD_URL" >> "$GITHUB_OUTPUT"
         env:
           EXPO_PUBLIC_PROJECT_ID: 361b27c1-4d2d-4a5f-b231-00456d27d148
+
+      - name: Download and extract simulator build
+        run: |
+          curl -L -o simulator-build.tar.gz "${{ steps.eas-build.outputs.build-url }}"
+          mkdir -p ios-simulator-app
+          tar -xzf simulator-build.tar.gz -C ios-simulator-app
+
+      - name: Upload simulator app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: ios-simulator-app
+          retention-days: 3
+
+  screenshots:
+    needs: build
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: iphone
+            devicetype_grep: 'iPhone-16-Pro-Max'
+          - label: ipad
+            devicetype_grep: 'iPad-Pro-13'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download simulator app artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: ios-simulator-app
+
+      - name: Install Maestro
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+
+      - name: Create and boot simulator
+        id: sim
+        run: |
+          DEVICE_TYPE_ID=$(xcrun simctl list devicetypes -j | jq -r --arg grep "${{ matrix.devicetype_grep }}" '.devicetypes[] | select(.identifier | contains($grep)) | .identifier' | head -1)
+          RUNTIME_ID=$(xcrun simctl list runtimes -j | jq -r '.runtimes[] | select(.name | startswith("iOS")) | .identifier' | tail -1)
+          UDID=$(xcrun simctl create "screenshot-${{ matrix.label }}" "$DEVICE_TYPE_ID" "$RUNTIME_ID")
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Install and launch app
+        run: |
+          APP_PATH=$(find ios-simulator-app -maxdepth 3 -name "*.app" | head -1)
+          xcrun simctl install "${{ steps.sim.outputs.udid }}" "$APP_PATH"
+          xcrun simctl launch "${{ steps.sim.outputs.udid }}" com.betelcode.app
+
+      - name: Run Maestro screenshot flow
+        env:
+          MAESTRO_DEVICE: ${{ steps.sim.outputs.udid }}
+          DEMO_EMAIL: ${{ secrets.DEMO_ACCOUNT_EMAIL }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_ACCOUNT_PASSWORD }}
+        run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
+          mkdir -p "screenshots/${{ matrix.label }}"
+          maestro --device "$MAESTRO_DEVICE" test .maestro/app-store-screenshots.yaml \
+            -e DEMO_EMAIL="$DEMO_EMAIL" -e DEMO_PASSWORD="$DEMO_PASSWORD"
+          find . -maxdepth 1 -name "0*.png" -exec mv {} "screenshots/${{ matrix.label }}/" \;
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ matrix.label }}
+          path: screenshots/${{ matrix.label }}
+          retention-days: 14
+
+      - name: Upload Maestro debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-debug-${{ matrix.label }}
+          path: ~/.maestro/tests
+          retention-days: 14
+          if-no-files-found: ignore

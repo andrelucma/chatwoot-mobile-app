@@ -42,7 +42,7 @@ const HeaderTitle = () => (
   <Animated.View style={tailwind.style('flex-1')}>
     <Text
       style={tailwind.style(
-        'text-[17px] font-inter-medium-24 tracking-[0.32px] leading-[17px] text-center text-gray-950',
+        'text-[17px] font-inter-580-24 tracking-[0.32px] leading-[17px] text-center text-white',
       )}>
       {i18n.t('CONVERSATION.HEADER.TITLE')}
     </Text>
@@ -58,7 +58,7 @@ const LeftSection = ({ currentState, isSelectedAll, onLeftIconPress }: LeftSecti
       <Animated.View style={tailwind.style('flex-1 items-start')}>
         <Pressable onPress={onLeftIconPress} hitSlop={16}>
           <Animated.View exiting={exiting} entering={entering}>
-            <Icon size={24} icon={<SearchIcon stroke={tailwind.color('text-gray-800')} />} />
+            <Icon size={24} icon={<SearchIcon stroke="white" />} />
           </Animated.View>
         </Pressable>
       </Animated.View>
@@ -75,7 +75,7 @@ const LeftSection = ({ currentState, isSelectedAll, onLeftIconPress }: LeftSecti
               isSelectedAll ? (
                 <CheckedIcon />
               ) : (
-                <UncheckedIcon stroke={tailwind.color('text-gray-800')} />
+                <UncheckedIcon stroke="rgba(255,255,255,0.6)" />
               )
             }
           />
@@ -102,7 +102,7 @@ const FilterSection = ({
         <Text
           style={tailwind.style(
             'text-md font-inter-medium-24 leading-[17px] tracking-[0.24px]',
-            filtersAppliedCount === 0 ? 'text-gray-700' : 'text-blue-800',
+            filtersAppliedCount === 0 ? 'text-blue-200' : 'text-white',
           )}>
           {i18n.t('CONVERSATION.HEADER.CLEAR_FILTER')}
           {filtersAppliedCount > 0 ? ` (${filtersAppliedCount})` : ''}
@@ -124,18 +124,18 @@ const RightSection = ({
       <Pressable onPress={onRightIconPress} hitSlop={16}>
         {currentState === 'Filter' || currentState === 'Select' ? (
           <Animated.View exiting={exiting} entering={entering}>
-            <Icon size={24} icon={<CloseIcon />} />
+            <Icon size={24} icon={<CloseIcon stroke="white" />} />
           </Animated.View>
         ) : (
           <Animated.View exiting={exiting} entering={entering}>
             {filtersAppliedCount > 0 && (
               <Animated.View
                 style={tailwind.style(
-                  'absolute z-10 -right-0.5 h-2.5 w-2.5 rounded-full bg-blue-800',
+                  'absolute z-10 -right-0.5 h-2.5 w-2.5 rounded-full bg-white',
                 )}
               />
             )}
-            <Icon size={24} icon={<FilterIcon />} />
+            <Icon size={24} icon={<FilterIcon stroke="white" />} />
           </Animated.View>
         )}
       </Pressable>
@@ -155,7 +155,7 @@ export const ConversationHeaderPresenter = ({
 
   return (
     <Animated.View
-      style={[tailwind.style('flex flex-row justify-between items-center px-4 pt-2 pb-[12px]')]}>
+      style={tailwind.style('flex flex-row justify-between items-center px-4 pt-2 pb-[12px] bg-blue-800')}>
       <LeftSection
         currentState={currentState}
         isSelectedAll={isSelectedAll}

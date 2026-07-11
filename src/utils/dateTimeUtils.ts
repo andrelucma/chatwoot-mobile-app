@@ -1,39 +1,18 @@
-import { fromUnixTime, formatDistanceToNow, isSameDay, format } from 'date-fns';
+import { fromUnixTime, formatDistanceToNow, isSameDay, format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import i18n from '@/i18n';
 import { UnixTimestamp } from '@/types';
 
 export const formatRelativeTime = (time: number) => {
   const unixTime = fromUnixTime(time);
-  return formatDistanceToNow(unixTime, { addSuffix: true });
+  return formatDistanceToNow(unixTime, { addSuffix: true, locale: ptBR });
 };
 
-export const formatTimeToShortForm = (time: string, withAgo = false) => {
-  const suffix = withAgo ? ' ago' : '';
-  const timeMappings: { [key: string]: string } = {
-    'less than a minute ago': 'now',
-    'a minute ago': `1m${suffix}`,
-    'an hour ago': `1h${suffix}`,
-    'a day ago': `1d${suffix}`,
-    'a month ago': `1mo${suffix}`,
-    'a year ago': `1y${suffix}`,
-  };
-  // Check if the time string is one of the specific cases
-  if (timeMappings[time]) {
-    return timeMappings[time];
+export const formatTimeToShortForm = (time: string, _withAgo = false) => {
+  if (time.includes('menos de um minuto') || time.includes('menos de 30 segundos')) {
+    return 'agora';
   }
-  const convertToShortTime = time
-    .replace(/about|over|almost|/g, '')
-    .replace(' minute ago', `m${suffix}`)
-    .replace(' minutes ago', `m${suffix}`)
-    .replace(' hour ago', `h${suffix}`)
-    .replace(' hours ago', `h${suffix}`)
-    .replace(' day ago', `d${suffix}`)
-    .replace(' days ago', `d${suffix}`)
-    .replace(' month ago', `mo${suffix}`)
-    .replace(' months ago', `mo${suffix}`)
-    .replace(' year ago', `y${suffix}`)
-    .replace(' years ago', `y${suffix}`);
-  return convertToShortTime;
+  return time;
 };
 
 export const formatDate = (date: UnixTimestamp, dateFormat = 'MMM dd, yyyy') => {
@@ -59,6 +38,23 @@ export const unixTimestampToReadableTime = (unixTimestamp: number) => {
   const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
 
   return `${formattedHours}:${minutes} ${ampm}`;
+};
+
+export const formatIsoDateTime = (isoString: string) => {
+  const dateObj = parseISO(isoString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const time = format(dateObj, 'HH:mm');
+
+  if (isSameDay(dateObj, today)) {
+    return `${i18n.t('CONVERSATION.TODAY')} ${i18n.t('AGENT_STATUS.AT_TIME', { time })}`;
+  }
+  if (isSameDay(dateObj, yesterday)) {
+    return `${i18n.t('CONVERSATION.YESTERDAY')} ${i18n.t('AGENT_STATUS.AT_TIME', { time })}`;
+  }
+  return `${format(dateObj, 'dd/MM')} ${i18n.t('AGENT_STATUS.AT_TIME', { time })}`;
 };
 
 export const messageStamp = ({

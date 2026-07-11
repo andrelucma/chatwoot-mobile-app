@@ -33,18 +33,17 @@ export const handleOpenPhotosLibrary = async dispatch => {
   if (pickedAssets.didCancel) {
   } else if (pickedAssets.errorCode) {
     Alert.alert(
-      'Permission Denied',
+      'Permissão negada',
       pickedAssets.errorMessage ||
-        'The permission to access the photo library has been denied and cannot be requested again. Please enable it in your device settings if you wish to access photos from your library.',
+        'A permissão para acessar a galeria foi negada. Ative nas configurações do dispositivo.',
       [
         {
-          text: 'Cancel',
+          text: 'Cancelar',
           style: 'cancel',
         },
         {
-          text: 'Open Settings',
+          text: 'Abrir configurações',
           onPress: () => {
-            // Open app settings
             Linking.openSettings();
           },
         },
@@ -63,17 +62,16 @@ const handleLaunchCamera = async dispatch => {
     async result => {
       if (RESULTS.BLOCKED === result) {
         Alert.alert(
-          'Permission Denied',
-          'The permission to access the camera has been denied and cannot be requested again. Please enable it in your device settings if you wish to use the camera feature.',
+          'Permissão negada',
+          'A permissão para acessar a câmera foi negada. Ative nas configurações do dispositivo.',
           [
             {
-              text: 'Cancel',
+              text: 'Cancelar',
               style: 'cancel',
             },
             {
-              text: 'Open Settings',
+              text: 'Abrir configurações',
               onPress: () => {
-                // Open app settings
                 Linking.openSettings();
               },
             },
@@ -152,17 +150,17 @@ const handleAttachFile = async dispatch => {
 const ADD_MENU_OPTIONS = [
   {
     icon: <PhotosIcon />,
-    title: 'Photos',
+    title: 'Fotos',
     handlePress: handleOpenPhotosLibrary,
   },
   {
     icon: <CameraIcon />,
-    title: 'Camera',
+    title: 'Câmera',
     handlePress: handleLaunchCamera,
   },
   {
     icon: <AttachFileIcon />,
-    title: 'Attach File',
+    title: 'Anexar arquivo',
     handlePress: handleAttachFile,
   },
   {

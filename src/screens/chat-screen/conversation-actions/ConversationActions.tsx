@@ -153,7 +153,7 @@ export const ConversationActions = () => {
           {conversation && <ConversationMetaInformation conversation={conversation} />}
         </Animated.View>
         <Animated.View style={tailwind.style('px-4 pt-10')}>
-          <Button variant="secondary" handlePress={onShareConversation} text="Share conversation" />
+          <Button variant="secondary" handlePress={onShareConversation} text="Compartilhar conversa" />
         </Animated.View>
       </ScrollView>
       <BottomSheetModal

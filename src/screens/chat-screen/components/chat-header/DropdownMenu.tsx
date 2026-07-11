@@ -11,6 +11,7 @@ import * as DropdownMenu from 'zeego/dropdown-menu';
 
 import { BottomSheetHeader, BottomSheetWrapper } from '@/components-next';
 import { tailwind } from '@/theme';
+import i18n from '@/i18n';
 
 export type DashboardList = {
   title: string;
@@ -106,6 +107,17 @@ export const ChatDropdownMenu = (props: PropsWithChildren<ChatDropdownMenuProps>
   );
 
   if (Platform.OS === 'android') {
+    // Item único sem URL: navega direto sem abrir bottom sheet
+    if (dropdownMenuList.length === 1 && !dropdownMenuList[0].url) {
+      return (
+        <Pressable
+          onPress={() => dropdownMenuList[0].onSelect(undefined, dropdownMenuList[0].title)}
+          style={tailwind.style('ml-4')}
+          hitSlop={8}>
+          {children}
+        </Pressable>
+      );
+    }
     return (
       <React.Fragment>
         <Pressable onPress={openSheet} style={tailwind.style('ml-4')} hitSlop={8}>
@@ -125,7 +137,7 @@ export const ChatDropdownMenu = (props: PropsWithChildren<ChatDropdownMenuProps>
           enablePanDownToClose
           snapPoints={[dropdownMenuList.length * 44 + 4 + 37]}>
           <BottomSheetWrapper>
-            <BottomSheetHeader headerText="Select action" />
+            <BottomSheetHeader headerText={i18n.t('CONVERSATION.SELECT_ACTION')} />
             <Animated.View style={tailwind.style('py-1 pl-3')}>
               {dropdownMenuList?.map((option, index) => {
                 const handleOnOptionSelect = () => {

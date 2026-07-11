@@ -32,7 +32,7 @@ export const FilePreview = (props: FilePreviewProps) => {
     try {
       FileViewer.open(localFilePath).catch(e => Alert.alert(e));
     } catch (e) {
-      Alert.alert('Not able to preview file' + e);
+      Alert.alert('Não foi possível visualizar o arquivo');
     }
   };
 
@@ -53,7 +53,7 @@ export const FilePreview = (props: FilePreviewProps) => {
               setFileDownload(false);
             })
             .catch(() => {
-              Alert.alert('File load error');
+              Alert.alert('Erro ao carregar arquivo');
             });
         }
       });

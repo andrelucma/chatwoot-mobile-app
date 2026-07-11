@@ -7,13 +7,16 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { AppTabs } from './tabs/AppTabs';
 import i18n from 'i18n';
 import { navigationRef } from '@/utils/navigationUtils';
 import { findConversationLinkFromPush, findNotificationFromFCM } from '@/utils/pushUtils';
 import { extractConversationIdFromUrl } from '@/utils/conversationUtils';
 import { useAppSelector } from '@/hooks';
+import { store } from '@/store';
+import { selectLoggedIn } from '@/store/auth/authSelectors';
+import { settingsActions } from '@/store/settings/settingsActions';
 import { selectInstallationUrl, selectLocale } from '@/store/settings/settingsSelectors';
 import { SSO_CALLBACK_URL } from '@/constants';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -32,7 +35,30 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
+const AppDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: 'hsl(0, 0%, 10.5%)',
+    card: 'hsl(0, 0%, 15.8%)',
+    text: 'hsl(0, 0%, 93.5%)',
+    border: 'hsl(0, 0%, 18.9%)',
+  },
+};
+
+const AppLightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'hsl(0, 0%, 94.6%)',
+    card: 'rgb(255, 255, 255)',
+    text: 'hsl(0, 0%, 12.5%)',
+    border: 'hsl(0, 0%, 92.0%)',
+  },
+};
+
 export const AppNavigationContainer = () => {
+  const colorScheme = 'light';
   const [fontsLoaded] = useFonts({
     'Inter-400-20': Inter40020,
     'Inter-420-20': Inter42020,
@@ -151,6 +177,15 @@ export const AppNavigationContainer = () => {
       // Listen to incoming links from deep linking
       const subscription = Linking.addEventListener('url', onReceiveURL);
 
+      // FCM can rotate the device token at any time (reinstall, restored backup, token
+      // expiry). Re-register it immediately instead of waiting for the next cold start,
+      // otherwise the server keeps sending push to a token nobody is listening on anymore.
+      const unsubscribeTokenRefresh = messaging().onTokenRefresh(() => {
+        if (selectLoggedIn(store.getState())) {
+          store.dispatch(settingsActions.saveDeviceDetails());
+        }
+      });
+
       //onNotificationOpenedApp: When the application is running, but in the background.
       const unsubscribeNotification = messaging().onNotificationOpenedApp(message => {
         if (message) {
@@ -170,6 +205,7 @@ export const AppNavigationContainer = () => {
       return () => {
         subscription.remove();
         unsubscribeNotification();
+        unsubscribeTokenRefresh();
       };
     },
   };
@@ -188,6 +224,7 @@ export const AppNavigationContainer = () => {
 
   return (
     <NavigationContainer
+      theme={colorScheme === 'dark' ? AppDarkTheme : AppLightTheme}
       linking={linking}
       ref={navigationRef}
       onReady={() => {

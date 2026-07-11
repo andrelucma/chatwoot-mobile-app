@@ -19,9 +19,18 @@ import { selectWebSocketUrl } from '@/store/settings/settingsSelectors';
 import { getUserPermissions } from '@/utils/permissionUtils';
 import { CONVERSATION_PERMISSIONS } from 'constants/permissions';
 
-import { AuthStack, ConversationStack, SettingsStack, InboxStack } from '../stack';
+import {
+  AgentStatusStack,
+  AuthStack,
+  ContactsStack,
+  ConversationStack,
+  SettingsStack,
+  InboxStack,
+} from '../stack';
 import ChatScreen from '@/screens/chat-screen/ChatScreen';
 import ContactDetailsScreen from '@/screens/contact-details/ContactDetailsScreen';
+import ContactFormScreen from '@/screens/contacts/ContactFormScreen';
+import NewConversationScreen from '@/screens/contacts/NewConversationScreen';
 import DashboardScreen from '@/screens/dashboard/DashboardScreen';
 import SearchScreen from '@/screens/search/SearchScreen';
 
@@ -44,7 +53,9 @@ const Tab = createBottomTabNavigator();
 
 export type TabParamList = {
   Conversations: undefined;
+  Contacts: undefined;
   Inbox: undefined;
+  AgentStatus: undefined;
   Settings: undefined;
   Login: undefined;
   ConfigInstallationURL: undefined;
@@ -61,7 +72,9 @@ export type TabBarExcludedScreenParamList = {
     primaryActorType?: string;
     messageId?: number;
   };
-  ContactDetails: { conversationId?: number; contactId?: number };
+  ContactDetails: { conversationId?: number; contactId?: number; fromContacts?: boolean };
+  ContactFormScreen: { contactId?: number };
+  NewConversationScreen: { contactId: number };
   ConversationActions: undefined;
   Dashboard: { url: string };
   Login: undefined;
@@ -144,6 +157,8 @@ const Tabs = () => {
     userPermissions.includes(permission),
   );
 
+  const isAdministrator = currentAccountRole === 'administrator';
+
   const checkAppVersion = useCallback(async () => {
     if (chatwootVersion) {
       checkServerSupport({
@@ -166,11 +181,27 @@ const Tabs = () => {
       {hasConversationPermission && (
         <Tab.Screen
           name="Conversations"
-          options={{ headerShown: false }}
+          options={{ headerShown: false, tabBarTestID: 'tab-conversations' }}
           component={ConversationStack}
         />
       )}
-      <Tab.Screen name="Settings" options={{ headerShown: false }} component={SettingsStack} />
+      <Tab.Screen
+        name="Contacts"
+        options={{ headerShown: false, tabBarTestID: 'tab-contacts' }}
+        component={ContactsStack}
+      />
+      {isAdministrator && (
+        <Tab.Screen
+          name="AgentStatus"
+          options={{ headerShown: false, tabBarTestID: 'tab-agent-status' }}
+          component={AgentStatusStack}
+        />
+      )}
+      <Tab.Screen
+        name="Settings"
+        options={{ headerShown: false, tabBarTestID: 'tab-settings' }}
+        component={SettingsStack}
+      />
     </Tab.Navigator>
   );
 };
@@ -188,10 +219,7 @@ export const AppTabs = () => {
           component={ChatScreen}
         />
         <Stack.Screen
-          options={{
-            presentation: 'formSheet',
-            animation: 'slide_from_bottom',
-          }}
+          options={{ animation: 'slide_from_right' }}
           name="ContactDetails"
           component={ContactDetailsScreen}
         />
@@ -207,6 +235,16 @@ export const AppTabs = () => {
           options={{ headerShown: false, animation: 'slide_from_right' }}
           name="SearchScreen"
           component={SearchScreen}
+        />
+        <Stack.Screen
+          options={{ animation: 'slide_from_right' }}
+          name="ContactFormScreen"
+          component={ContactFormScreen}
+        />
+        <Stack.Screen
+          options={{ animation: 'slide_from_right' }}
+          name="NewConversationScreen"
+          component={NewConversationScreen}
         />
       </Stack.Navigator>
     );

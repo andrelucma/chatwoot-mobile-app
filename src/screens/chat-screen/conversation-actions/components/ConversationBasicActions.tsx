@@ -12,6 +12,7 @@ import { OpenIcon, ResolvedFilledIcon, PendingFilledIcon, SnoozedFilledIcon } fr
 import { tailwind } from '@/theme';
 import { useHaptic, useScaleAnimation } from '@/utils';
 import { ConversationStatus } from '@/types';
+import i18n from '@/i18n';
 
 import { ConversationActionType } from '../ConversationActions';
 
@@ -134,9 +135,9 @@ const ConversationActionOption = (props: ConversationActionOptionProps) => {
         <Icon icon={conversationAction.actionIcon} size={32} />
         <Animated.Text
           style={tailwind.style(
-            'text-md font-inter-normal-20 leading-[17px] tracking-[0.32px] text-center pt-5 capitalize text-gray-950 ',
+            'text-xs font-inter-normal-20 leading-[14px] tracking-[0.32px] text-center pt-5 text-gray-950',
           )}>
-          {conversationAction.actionText}
+          {i18n.t(`CONVERSATION.STATUS_ACTIONS.${conversationAction.actionText.toUpperCase()}`)}
         </Animated.Text>
       </Pressable>
     </Animated.View>

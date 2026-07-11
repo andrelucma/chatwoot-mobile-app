@@ -122,7 +122,7 @@ export const AudioRecorder = ({
         })
         .catch(error => {
           Alert.alert(
-            'Error preparing audio file',
+            'Erro ao preparar arquivo de áudio',
             error instanceof Error ? error.message : String(error),
           );
           deleteRecorder();
@@ -193,14 +193,14 @@ export const AudioRecorder = ({
         } catch (error) {
           Sentry.captureException(error);
           Alert.alert(
-            'Error preparing audio file',
+            'Erro ao preparar arquivo de áudio',
             error instanceof Error ? error.message : String(error),
           );
         }
       })
       .catch(e => {
         console.error('Recording error:', e);
-        Alert.alert('Recording Error', e.toString());
+        Alert.alert('Erro de gravação', e.toString());
       })
       .finally(() => {
         setIsSending(false);

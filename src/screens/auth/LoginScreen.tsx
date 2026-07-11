@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Animated, Image, Pressable, StatusBar, TextInput, View } from 'react-native';
+import { Animated, Image, Keyboard, Platform, Pressable, StatusBar, TextInput, View, useColorScheme } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useNavigation } from '@react-navigation/native';
 import {
   BottomSheetModal,
@@ -41,6 +42,8 @@ type FormData = {
 };
 
 const LoginScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -55,6 +58,15 @@ const LoginScreen = () => {
   });
 
   const { languagesModalSheetRef } = useRefsContext();
+  const [keyboardShown, setKeyboardShown] = useState(false);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, () => setKeyboardShown(true));
+    const hideSub = Keyboard.addListener(hideEvent, () => setKeyboardShown(false));
+    return () => { showSub.remove(); hideSub.remove(); };
+  }, []);
 
   const animationConfigs = useBottomSheetSpringConfigs({
     mass: 1,
@@ -78,10 +90,7 @@ const LoginScreen = () => {
 
   useEffect(() => {
     dispatch(resetAuth());
-    if (!installationUrl) {
-      navigation.navigate('ConfigureURL' as never);
-    }
-  }, [installationUrl, navigation, dispatch]);
+  }, [dispatch]);
 
   const onSubmit = async (data: FormData) => {
     const { email, password } = data;
@@ -138,33 +147,39 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-100' : 'bg-blue-800'}`)}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-100') : '#1e40af'}
+        barStyle="light-content"
       />
-      <View style={tailwind.style('flex-1 bg-white')}>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={tailwind.style('px-6 pt-24')}>
-          <Image
-            // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-            source={require('@/assets/images/logo.png')}
-            style={tailwind.style('w-10 h-10')}
-            resizeMode="contain"
-          />
-          <View style={tailwind.style('pt-6 gap-4')}>
-            <Animated.Text style={tailwind.style('text-2xl text-gray-950 font-inter-semibold-20')}>
-              {i18n.t('LOGIN.TITLE')}
-            </Animated.Text>
-            <Animated.Text
-              style={tailwind.style(
-                'font-inter-normal-20 leading-[18px] tracking-[0.32px] text-gray-900',
-              )}>
-              {i18n.t('LOGIN.DESCRIPTION', { baseUrl })}
-            </Animated.Text>
-          </View>
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        style={tailwind.style('flex-1')}
+        contentContainerStyle={tailwind.style('flex-grow')}>
+
+          {/* Brand hero — esconde quando teclado está visível */}
+          {!keyboardShown && (
+            <View style={tailwind.style(`items-center pt-10 pb-8 px-6 ${isDark ? 'bg-grayDark-100' : 'bg-blue-800'}`)}>
+              <Image
+                // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+                source={require('@/assets/images/logo.png')}
+                style={tailwind.style('w-16 h-16')}
+                resizeMode="contain"
+              />
+              <Animated.Text style={tailwind.style('text-[26px] font-inter-580-24 text-white mt-4')}>
+                {i18n.t('LOGIN.TITLE')}
+              </Animated.Text>
+              <Animated.Text
+                style={tailwind.style('text-[14px] font-inter-normal-20 text-blue-200 mt-1 text-center')}>
+                {i18n.t('LOGIN.DESCRIPTION', { baseUrl })}
+              </Animated.Text>
+            </View>
+          )}
+
+          {/* Form card */}
+          <View style={tailwind.style(`rounded-t-[28px] px-6 pt-8 pb-8 ${isDark ? 'bg-grayDark-100' : 'bg-white'}`)}>
 
           {showSsoLogin && (
             <View>
@@ -174,7 +189,6 @@ const LoginScreen = () => {
                 handlePress={handleSsoLogin}
                 disabled={isLoggingIn}
                 variant="outline"
-                style={tailwind.style('mt-8')}
               />
 
               <View style={tailwind.style('flex-row items-center my-6')}>
@@ -202,6 +216,7 @@ const LoginScreen = () => {
                   {i18n.t('LOGIN.EMAIL')}
                 </Animated.Text>
                 <TextInput
+                  testID="login-email-input"
                   style={[
                     tailwind.style(
                       'text-base font-inter-normal-20 tracking-[0.24px] leading-[20px] android:leading-[18px]',
@@ -242,6 +257,7 @@ const LoginScreen = () => {
                 </Animated.Text>
                 <View style={tailwind.style('relative')}>
                   <TextInput
+                    testID="login-password-input"
                     style={[
                       tailwind.style(
                         'text-base font-inter-normal-20 tracking-[0.24px] leading-[20px] android:leading-[18px]',
@@ -278,17 +294,11 @@ const LoginScreen = () => {
           </Pressable>
 
           <Button
+            testID="login-submit-button"
             text={isLoggingIn ? i18n.t('LOGIN.LOGIN_LOADING') : i18n.t('LOGIN.LOGIN')}
             handlePress={handleSubmit(onSubmit)}
           />
 
-          <Pressable
-            style={tailwind.style('flex-row justify-center items-center mt-6')}
-            onPress={openConfigInstallationURL}>
-            <Animated.Text style={tailwind.style('text-sm text-gray-900')}>
-              {i18n.t('LOGIN.CHANGE_URL')}
-            </Animated.Text>
-          </Pressable>
           <Pressable
             style={tailwind.style('flex-row justify-center items-center mt-4')}
             onPress={() => languagesModalSheetRef.current?.present()}>
@@ -296,8 +306,8 @@ const LoginScreen = () => {
               {i18n.t('LOGIN.CHANGE_LANGUAGE')}
             </Animated.Text>
           </Pressable>
-        </Animated.ScrollView>
-      </View>
+          </View>
+      </KeyboardAwareScrollView>
       <BottomSheetModal
         ref={languagesModalSheetRef}
         backdropComponent={BottomSheetBackdrop}

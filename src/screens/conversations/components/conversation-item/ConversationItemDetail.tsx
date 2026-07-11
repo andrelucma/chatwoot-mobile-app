@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { memo, useState } from 'react';
-import { Dimensions, ImageURISource, Text } from 'react-native';
+import { Dimensions, ImageURISource, Text, useColorScheme } from 'react-native';
 import { LinearTransition } from 'react-native-reanimated';
 import { isEqual } from 'lodash';
 
@@ -71,6 +71,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
     typingText,
   } = props;
 
+  const isDark = useColorScheme() === 'dark';
   const [shouldShowSLA, setShouldShowSLA] = useState(true);
 
   const hasPriority = priority !== null;
@@ -86,16 +87,14 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
   return (
     <AnimatedNativeView
       layout={LinearTransition.springify().damping(28).stiffness(200)}
-      style={tailwind.style('flex-1 gap-1 py-3 border-b-[1px] border-b-blackA-A3')}>
+      style={tailwind.style('flex-1 gap-1 py-4')}>
       <AnimatedNativeView
         style={tailwind.style('flex flex-row justify-between items-center h-[24px]')}>
         <AnimatedNativeView style={tailwind.style('flex flex-row items-center h-[24px] gap-[5px]')}>
           <Text
             numberOfLines={1}
             style={tailwind.style(
-              'text-base font-inter-medium-24 tracking-[0.24px] text-gray-950 capitalize',
-              // Calculated based on the widths of other content,
-              // We might have to do a 10-20px offset based on the max width of the timestamp
+              `text-lg ${unreadCount >= 1 ? 'font-inter-semibold-20' : 'font-inter-medium-24'} tracking-[0.24px] ${isDark ? 'text-grayDark-950' : 'text-gray-950'} capitalize`,
               `max-w-[${width - 250}px]`,
             )}>
             {senderName}
@@ -115,7 +114,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
             {typingText ? (
               <TypingMessage typingText={typingText} />
             ) : (
-              <ConversationLastMessage numberOfLines={1} lastMessage={lastMessage as Message} />
+              <ConversationLastMessage numberOfLines={1} lastMessage={lastMessage as Message} isUnread={unreadCount >= 1} />
             )}
 
             {unreadCount >= 1 && (
@@ -163,7 +162,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
           {typingText ? (
             <TypingMessage typingText={typingText} />
           ) : (
-            <ConversationLastMessage numberOfLines={2} lastMessage={lastMessage as Message} />
+            <ConversationLastMessage numberOfLines={2} lastMessage={lastMessage as Message} isUnread={unreadCount >= 1} />
           )}
 
           <AnimatedNativeView style={tailwind.style('flex flex-row items-end gap-1')}>

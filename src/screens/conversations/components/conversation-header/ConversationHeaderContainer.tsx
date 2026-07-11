@@ -64,7 +64,7 @@ export const ConversationHeader = () => {
 
   const hapticSuccess = useHaptic('success');
 
-  const headerBorderColor = tailwind.color('text-blackA-A3') as string;
+  const headerBorderColor = 'rgba(255,255,255,0.12)';
 
   const headerOpenState = useDerivedValue(() =>
     currentState !== 'none' && currentState !== 'Select' ? withSpring(1) : withSpring(0),

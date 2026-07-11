@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, AppState, RefreshControl, StatusBar, View, useColorScheme } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -77,6 +77,7 @@ type FlashListRenderItemType = {
 const ConversationList = () => {
   const { dismissAll } = useBottomSheetModal();
   const dispatch = useAppDispatch();
+  const colorScheme = useColorScheme();
   const [appState, setAppState] = useState(AppState.currentState);
 
   // This is used to prevent the infinite scrolling before the list is ready
@@ -260,6 +261,7 @@ const ConversationList = () => {
       layout={LinearTransition.springify().damping(18).stiffness(120)}
       showsVerticalScrollIndicator={false}
       data={allConversations}
+      extraData={colorScheme}
       estimatedItemSize={91}
       onScroll={scrollHandler}
       onEndReached={handleOnEndReached}
@@ -268,12 +270,16 @@ const ConversationList = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       renderItem={handleRender}
+      style={tailwind.style('flex-1')}
+      ListHeaderComponent={() => <View style={{ height: 8, backgroundColor: colorScheme === 'dark' ? '#1c1c1e' : 'white' }} />}
       contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}
     />
   );
 };
 
 const ConversationScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const currentBottomSheet = useAppSelector(selectBottomSheetState);
   const dispatch = useAppDispatch();
 
@@ -310,15 +316,17 @@ const ConversationScreen = () => {
   }, [currentBottomSheet]);
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-blue-800'}`)}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : '#1e40af'}
+        barStyle="light-content"
       />
       <ConversationListStateProvider>
         <ConversationHeader />
-        <ConversationList />
+        <Animated.View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-gray-100'}`)}>
+          <ConversationList />
+        </Animated.View>
         <BottomSheetModal
           ref={filtersModalSheetRef}
           backdropComponent={BottomSheetBackdrop}

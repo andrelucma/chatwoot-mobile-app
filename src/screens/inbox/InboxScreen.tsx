@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, RefreshControl, StatusBar, View, useColorScheme } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -33,6 +33,7 @@ const AnimatedFlashlist = Animated.createAnimatedComponent(FlashList<Notificatio
 
 const InboxList = () => {
   const [pageNumber, setPageNumber] = useState(1);
+  const colorScheme = useColorScheme();
 
   const [isFlashListReady, setFlashListReady] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -157,18 +158,23 @@ const InboxList = () => {
       layout={LinearTransition.springify().damping(18).stiffness(120)}
       showsVerticalScrollIndicator={false}
       data={notifications}
+      extraData={colorScheme}
       estimatedItemSize={71}
       onScroll={scrollHandler}
       onEndReached={handleOnEndReached}
       onEndReachedThreshold={0.5}
       ListFooterComponent={ListFooterComponent}
       renderItem={handleRender}
+      style={tailwind.style('flex-1')}
+      ListHeaderComponent={() => <View style={{ height: 8, backgroundColor: colorScheme === 'dark' ? '#1c1c1e' : 'white' }} />}
       contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}
     />
   );
 };
 
 const InboxScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const dispatch = useAppDispatch();
 
   // Memoize the markAllAsRead callback
@@ -180,15 +186,17 @@ const InboxScreen = () => {
   }, [dispatch]);
 
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+    <SafeAreaView edges={['top']} style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-blue-800'}`)}>
       <StatusBar
         translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
+        backgroundColor={isDark ? tailwind.color('bg-grayDark-50') : '#1e40af'}
+        barStyle="light-content"
       />
       <InboxListStateProvider>
         <InboxHeader markAllAsRead={markAllAsRead} />
-        <InboxList />
+        <Animated.View style={tailwind.style(`flex-1 ${isDark ? 'bg-grayDark-50' : 'bg-gray-100'}`)}>
+          <InboxList />
+        </Animated.View>
       </InboxListStateProvider>
     </SafeAreaView>
   );
