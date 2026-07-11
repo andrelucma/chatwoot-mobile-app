@@ -177,6 +177,8 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+          SENTRY_ALLOW_FAILURE: 'true'
 
       - name: Write Google Play service account key
         run: echo "$GOOGLE_PLAY_KEY" > play-service-account.json
