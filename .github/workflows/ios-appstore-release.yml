@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'build (full archive+upload), check (poll build processing status), or create-version (create App Store version + attach latest build)'
+        description: 'build, check (poll status), create-version (create version + attach build), or set-whats-new (write release notes)'
         type: choice
-        options: [build, check, create-version]
+        options: [build, check, create-version, set-whats-new]
         default: build
 
 jobs:
@@ -174,6 +174,128 @@ jobs:
               data: { type: 'builds', id: buildId },
             });
             console.log(`Attached build ${buildId} to version ${versionId}`);
+          })().catch(err => {
+            console.error(err.message);
+            process.exit(1);
+          });
+          EOF
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+
+      - name: Clean up secrets from disk
+        if: always()
+        run: rm -f AuthKey.p8
+
+  set-whats-new:
+    if: ${{ github.event.inputs.mode == 'set-whats-new' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write App Store Connect API key
+        run: echo "$ASC_API_KEY" > AuthKey.p8
+        env:
+          ASC_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+
+      - name: Set What's New text for 4.7.0
+        run: |
+          node <<'EOF'
+          const crypto = require('crypto');
+          const fs = require('fs');
+          const https = require('https');
+
+          const VERSION_STRING = '4.7.0';
+          const WHATS_NEW_PT_BR = `Nesta versão:
+
+• Nova tela de Status dos Agentes (para administradores): veja quem está online, offline e o último acesso de cada um.
+• Corrigido um problema que podia interromper o recebimento de notificações push após um tempo de uso.
+• Ajustes de estabilidade e de interface.`;
+
+          function base64url(buf) {
+            return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+          }
+
+          const header = { alg: 'ES256', kid: process.env.ASC_KEY_ID, typ: 'JWT' };
+          const now = Math.floor(Date.now() / 1000);
+          const payload = { iss: process.env.ASC_ISSUER_ID, iat: now, exp: now + 1200, aud: 'appstoreconnect-v1' };
+          const headerB64 = base64url(Buffer.from(JSON.stringify(header)));
+          const payloadB64 = base64url(Buffer.from(JSON.stringify(payload)));
+          const signingInput = `${headerB64}.${payloadB64}`;
+          const privateKey = fs.readFileSync('AuthKey.p8', 'utf8');
+          const signature = crypto.sign('sha256', Buffer.from(signingInput), {
+            key: privateKey,
+            dsaEncoding: 'ieee-p1363',
+          });
+          const jwt = `${signingInput}.${base64url(signature)}`;
+
+          function apiRequest(method, urlPath, body) {
+            return new Promise((resolve, reject) => {
+              const payloadStr = body ? JSON.stringify(body) : null;
+              const req = https.request({
+                hostname: 'api.appstoreconnect.apple.com',
+                path: urlPath,
+                method,
+                headers: {
+                  Authorization: `Bearer ${jwt}`,
+                  'Content-Type': 'application/json',
+                  ...(payloadStr ? { 'Content-Length': Buffer.byteLength(payloadStr) } : {}),
+                },
+              }, res => {
+                let data = '';
+                res.on('data', d => data += d);
+                res.on('end', () => {
+                  if (res.statusCode >= 400) return reject(new Error(`HTTP ${res.statusCode} ${method} ${urlPath}: ${data}`));
+                  resolve(data ? JSON.parse(data) : null);
+                });
+              });
+              req.on('error', reject);
+              if (payloadStr) req.write(payloadStr);
+              req.end();
+            });
+          }
+
+          (async () => {
+            const appsResp = await apiRequest('GET', '/v1/apps?filter[bundleId]=com.betelcode.app');
+            const appId = appsResp.data[0].id;
+
+            const versions = await apiRequest('GET', `/v1/apps/${appId}/appStoreVersions?filter[versionString]=${VERSION_STRING}&filter[platform]=IOS`);
+            if (versions.data.length === 0) throw new Error(`Version ${VERSION_STRING} not found - run mode=create-version first`);
+            const versionId = versions.data[0].id;
+
+            const existingLocs = await apiRequest('GET', `/v1/appStoreVersions/${versionId}/appStoreVersionLocalizations`);
+            console.log(`Existing localizations: ${existingLocs.data.map(l => l.attributes.locale).join(', ') || '(none)'}`);
+
+            if (existingLocs.data.length === 0) {
+              // Mirror locales from the previous version so we know what to create.
+              const allVersions = await apiRequest('GET', `/v1/apps/${appId}/appStoreVersions?filter[platform]=IOS&sort=-createdDate&limit=5`);
+              const prevVersion = allVersions.data.find(v => v.id !== versionId);
+              let locales = ['pt-BR'];
+              if (prevVersion) {
+                const prevLocs = await apiRequest('GET', `/v1/appStoreVersions/${prevVersion.id}/appStoreVersionLocalizations`);
+                if (prevLocs.data.length > 0) locales = prevLocs.data.map(l => l.attributes.locale);
+              }
+              console.log(`Creating localizations for: ${locales.join(', ')}`);
+              for (const locale of locales) {
+                await apiRequest('POST', '/v1/appStoreVersionLocalizations', {
+                  data: {
+                    type: 'appStoreVersionLocalizations',
+                    attributes: { locale, whatsNew: WHATS_NEW_PT_BR },
+                    relationships: { appStoreVersion: { data: { type: 'appStoreVersions', id: versionId } } },
+                  },
+                });
+                console.log(`Created localization ${locale} with What's New text`);
+              }
+            } else {
+              for (const loc of existingLocs.data) {
+                await apiRequest('PATCH', `/v1/appStoreVersionLocalizations/${loc.id}`, {
+                  data: {
+                    type: 'appStoreVersionLocalizations',
+                    id: loc.id,
+                    attributes: { whatsNew: WHATS_NEW_PT_BR },
+                  },
+                });
+                console.log(`Updated localization ${loc.attributes.locale} with What's New text`);
+              }
+            }
           })().catch(err => {
             console.error(err.message);
             process.exit(1);
