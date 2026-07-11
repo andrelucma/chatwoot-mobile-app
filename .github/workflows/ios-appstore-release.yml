@@ -2,9 +2,88 @@ name: iOS App Store Release Build
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'build (full archive+upload) or check (poll App Store Connect build processing status only)'
+        type: choice
+        options: [build, check]
+        default: build
 
 jobs:
+  check-status:
+    if: ${{ github.event.inputs.mode == 'check' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write App Store Connect API key
+        run: echo "$ASC_API_KEY" > AuthKey.p8
+        env:
+          ASC_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+
+      - name: Generate JWT and query build status
+        run: |
+          node <<'EOF'
+          const crypto = require('crypto');
+          const fs = require('fs');
+          const https = require('https');
+
+          function base64url(buf) {
+            return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+          }
+
+          const header = { alg: 'ES256', kid: process.env.ASC_KEY_ID, typ: 'JWT' };
+          const now = Math.floor(Date.now() / 1000);
+          const payload = { iss: process.env.ASC_ISSUER_ID, iat: now, exp: now + 1200, aud: 'appstoreconnect-v1' };
+
+          const headerB64 = base64url(Buffer.from(JSON.stringify(header)));
+          const payloadB64 = base64url(Buffer.from(JSON.stringify(payload)));
+          const signingInput = `${headerB64}.${payloadB64}`;
+
+          const privateKey = fs.readFileSync('AuthKey.p8', 'utf8');
+          const signature = crypto.sign('sha256', Buffer.from(signingInput), {
+            key: privateKey,
+            dsaEncoding: 'ieee-p1363',
+          });
+          const jwt = `${signingInput}.${base64url(signature)}`;
+
+          function apiGet(urlPath) {
+            return new Promise((resolve, reject) => {
+              https.get({
+                hostname: 'api.appstoreconnect.apple.com',
+                path: urlPath,
+                headers: { Authorization: `Bearer ${jwt}` },
+              }, res => {
+                let data = '';
+                res.on('data', d => data += d);
+                res.on('end', () => {
+                  if (res.statusCode >= 400) return reject(new Error(`HTTP ${res.statusCode}: ${data}`));
+                  resolve(JSON.parse(data));
+                });
+              }).on('error', reject);
+            });
+          }
+
+          (async () => {
+            const appsResp = await apiGet('/v1/apps?filter[bundleId]=com.betelcode.app');
+            const appId = appsResp.data[0].id;
+            const buildsResp = await apiGet(`/v1/builds?filter[app]=${appId}&sort=-uploadedDate&limit=3`);
+            for (const build of buildsResp.data) {
+              console.log(`BUILD version=${build.attributes.version} state=${build.attributes.processingState} uploaded=${build.attributes.uploadedDate}`);
+            }
+          })().catch(err => {
+            console.error(err.message);
+            process.exit(1);
+          });
+          EOF
+        env:
+          ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+
+      - name: Clean up secrets from disk
+        if: always()
+        run: rm -f AuthKey.p8
+
   build-and-upload:
+    if: ${{ github.event.inputs.mode == 'build' || github.event.inputs.mode == '' }}
     runs-on: macos-26
     env:
       EXPO_PUBLIC_PROJECT_ID: 361b27c1-4d2d-4a5f-b231-00456d27d148
