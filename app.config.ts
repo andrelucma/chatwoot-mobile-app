@@ -103,6 +103,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       './with-ffmpeg-pod.js',
       './with-fmt-consteval-fix.js',
+      './with-android-release-signing.js',
     ],
     androidNavigationBar: { backgroundColor: '#ffffff' },
   };
