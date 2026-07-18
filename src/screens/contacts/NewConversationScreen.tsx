@@ -85,22 +85,23 @@ const NewConversationScreen = ({ route }: Props) => {
     return body?.text || '';
   };
 
-  // Meta templates use positional placeholders ({{1}}, {{2}}, ...). The only
-  // contact data available here is the name. Without a name we leave the
-  // template untouched instead of filling placeholders with an empty string,
-  // which would leave stray spaces/punctuation behind.
+  // Meta templates use either positional placeholders ({{1}}, {{2}}, ...) or
+  // named ones ({{nome}}, {{customer_name}}, ...). The only contact data
+  // available here is the name. Without a name we leave the template
+  // untouched instead of filling placeholders with an empty string, which
+  // would leave stray spaces/punctuation behind.
   const buildProcessedParams = (bodyText: string, contactName: string): Record<string, string> => {
     const trimmedName = contactName.trim();
     if (!trimmedName) return {};
     const params: Record<string, string> = {};
-    for (const match of bodyText.matchAll(/{{\s*(\d+)\s*}}/g)) {
+    for (const match of bodyText.matchAll(/{{\s*(\w+)\s*}}/g)) {
       params[match[1]] = trimmedName;
     }
     return params;
   };
 
   const substituteTemplateBody = (bodyText: string, params: Record<string, string>) =>
-    bodyText.replace(/{{\s*(\d+)\s*}}/g, (match, position) => params[position] ?? match);
+    bodyText.replace(/{{\s*(\w+)\s*}}/g, (match, position) => params[position] ?? match);
 
   const handleStartConversation = useCallback(async () => {
     if (!selectedInbox) return;
