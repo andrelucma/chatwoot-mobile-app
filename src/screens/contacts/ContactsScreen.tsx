@@ -58,8 +58,10 @@ const ContactsScreen = () => {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadingRef = useRef(false);
   const queryRef = useRef('');
+  const contactsRef = useRef<Contact[]>([]);
 
   useEffect(() => { queryRef.current = query; }, [query]);
+  useEffect(() => { contactsRef.current = contacts; }, [contacts]);
 
   const sections = useMemo<Section[]>(() => {
     if (query) return [{ title: '', data: contacts }];
@@ -75,7 +77,7 @@ const ContactsScreen = () => {
         const result = await dispatch(
           contactActions.searchContacts({ q: q || ' ', page: nextPage }),
         ).unwrap();
-        const merged = reset ? result.contacts : [...prev, ...result.contacts];
+        const merged = reset ? result.contacts : [...contactsRef.current, ...result.contacts];
         const sorted = [...merged].sort((a, b) =>
           (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' }),
         );

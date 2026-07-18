@@ -85,6 +85,23 @@ const NewConversationScreen = ({ route }: Props) => {
     return body?.text || '';
   };
 
+  // Meta templates use positional placeholders ({{1}}, {{2}}, ...). The only
+  // contact data available here is the name. Without a name we leave the
+  // template untouched instead of filling placeholders with an empty string,
+  // which would leave stray spaces/punctuation behind.
+  const buildProcessedParams = (bodyText: string, contactName: string): Record<string, string> => {
+    const trimmedName = contactName.trim();
+    if (!trimmedName) return {};
+    const params: Record<string, string> = {};
+    for (const match of bodyText.matchAll(/{{\s*(\d+)\s*}}/g)) {
+      params[match[1]] = trimmedName;
+    }
+    return params;
+  };
+
+  const substituteTemplateBody = (bodyText: string, params: Record<string, string>) =>
+    bodyText.replace(/{{\s*(\d+)\s*}}/g, (match, position) => params[position] ?? match);
+
   const handleStartConversation = useCallback(async () => {
     if (!selectedInbox) return;
     const isWhatsApp = isAWhatsAppCloudChannel(selectedInbox.inbox);
@@ -95,16 +112,23 @@ const NewConversationScreen = ({ route }: Props) => {
 
     setLoading(true);
     try {
+      const rawTemplateBody = selectedTemplate ? getTemplateBody(selectedTemplate) : undefined;
+      const processedParams = rawTemplateBody
+        ? buildProcessedParams(rawTemplateBody, contact.name || '')
+        : {};
+
       const templateParams: WhatsAppTemplateParams | undefined = selectedTemplate
         ? {
             name: selectedTemplate.name,
             category: selectedTemplate.category,
             language: selectedTemplate.language,
-            processed_params: {},
+            processed_params: processedParams,
           }
         : undefined;
 
-      const templateBody = selectedTemplate ? getTemplateBody(selectedTemplate) : undefined;
+      const templateBody = rawTemplateBody
+        ? substituteTemplateBody(rawTemplateBody, processedParams)
+        : undefined;
 
       const conversation = await dispatch(
         contactActions.createConversation({
@@ -124,7 +148,7 @@ const NewConversationScreen = ({ route }: Props) => {
     } finally {
       setLoading(false);
     }
-  }, [contactId, dispatch, navigation, selectedInbox, selectedTemplate, templates.length]);
+  }, [contact.name, contactId, dispatch, navigation, selectedInbox, selectedTemplate, templates.length]);
 
   if (!contact) return null;
 
