@@ -128,3 +128,87 @@ jobs:
       - name: Clean up secrets from disk
         if: always()
         run: rm -f play-service-account.json
+
+  build-and-upload:
+    if: ${{ github.event.inputs.mode == 'build' }}
+    runs-on: ubuntu-latest
+    env:
+      EXPO_PUBLIC_PROJECT_ID: 361b27c1-4d2d-4a5f-b231-00456d27d148
+      EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE: ./google-services.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Write google-services.json
+        run: echo "$ANDROID_GOOGLE_SERVICES_JSON" > google-services.json
+        env:
+          ANDROID_GOOGLE_SERVICES_JSON: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
+
+      - name: Prebuild Android project
+        run: npx expo prebuild --platform android --clean
+
+      - name: Write release keystore
+        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/betelcode-release.keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Build release AAB
+        run: cd android && ./gradlew bundleRelease
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+          SENTRY_ALLOW_FAILURE: 'true'
+
+      - name: Write Google Play service account key
+        run: echo "$GOOGLE_PLAY_KEY" > play-service-account.json
+        env:
+          GOOGLE_PLAY_KEY: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+
+      - name: Publish to Play Store (closed testing)
+        run: node scripts/play-publish.js
+        env:
+          GOOGLE_PLAY_KEY_PATH: play-service-account.json
+          PACKAGE_NAME: com.betelcode.app
+          AAB_PATH: android/app/build/outputs/bundle/release/app-release.aab
+          TRACK: alpha
+          VERSION_CODE: '5'
+          RELEASE_NAME: '4.7.1'
+          RELEASE_NOTES_PT_BR: |
+            Nesta versão:
+
+            • Preenchimento automático do nome do contato ao iniciar uma conversa com template do WhatsApp.
+            • Corrigida a lista de contatos: agora carrega todos os contatos corretamente, e a ordenação alfabética passou a considerar nomes com acento.
+            • Corrigido um problema em que trocar de conta não atualizava algumas telas imediatamente.
+            • Ajustes de estabilidade e de interface.
+
+      - name: Clean up secrets from disk
+        if: always()
+        run: rm -f play-service-account.json google-services.json android/app/betelcode-release.keystore
+
+      - name: Upload AAB artifact (backup)
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 7

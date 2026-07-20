@@ -21,7 +21,11 @@ const initialState: AgentState = {
 const agentSlice = createSlice({
   name: 'agents',
   initialState,
-  reducers: {},
+  reducers: {
+    clearAgents: state => {
+      state.records = [];
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(agentActions.fetchAgents.pending, state => {
@@ -39,4 +43,5 @@ const agentSlice = createSlice({
   },
 });
 
+export const { clearAgents } = agentSlice.actions;
 export default agentSlice.reducer;

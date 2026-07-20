@@ -21,6 +21,7 @@ import { clearAllConversations } from '@/store/conversation/conversationSlice';
 import { resetNotifications } from '@/store/notification/notificationSlice';
 import { clearAllContacts } from '@/store/contact/contactSlice';
 import { clearSearchResults } from '@/store/search/searchSlice';
+import { clearAgents } from '@/store/agent/agentSlice';
 
 import { RecentSearches } from '@/screens/search/utils/recentSearches';
 import i18n from 'i18n';
@@ -173,13 +174,23 @@ const SettingsScreen = () => {
     dispatch(setLocale(locale));
   };
 
-  const changeAccount = (accountId: number) => {
+  const changeAccount = async (accountId: number) => {
     dispatch(clearAllContacts());
     dispatch(clearAllConversations());
     dispatch(resetNotifications());
     dispatch(clearSearchResults());
+    dispatch(clearAgents());
     dispatch(setAccount(accountId));
-    dispatch(authActions.setActiveAccount({ profile: { account_id: accountId } }));
+    try {
+      // The Tabs remount below re-fetches the profile, which the API scopes to
+      // whatever account the backend currently considers active. Without waiting
+      // for this to land first, that refetch can race ahead of the switch and
+      // revert account_id to the old account, leaving screens that fetch lazily
+      // (e.g. on tab focus) showing the previous account's data until re-login.
+      await dispatch(authActions.setActiveAccount({ profile: { account_id: accountId } })).unwrap();
+    } catch {
+      // proceed with the client-side switch even if the server-side sync fails
+    }
     navigation.dispatch(StackActions.replace('Tab'));
   };
 
