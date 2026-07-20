@@ -7,6 +7,7 @@ import Svg, { Path, Circle } from 'react-native-svg';
 import { SearchBar } from '@/components-next/common/search/SearchBar';
 import { Spinner } from '@/components-next/spinner';
 import { tailwind } from '@/theme';
+import { TAB_BAR_HEIGHT } from '@/constants';
 import { Contact } from '@/types';
 import { useAppDispatch } from '@/hooks';
 import { contactActions } from '@/store/contact/contactActions';
@@ -21,7 +22,19 @@ type Section = { title: string; data: Contact[] };
 const groupByLetter = (contacts: Contact[]): Section[] => {
   const map = new Map<string, Contact[]>();
   contacts.forEach(c => {
-    const letter = (c.name || '#').charAt(0).toUpperCase();
+    const rawLetter = (c.name || '#').charAt(0).toUpperCase();
+    // Strip diacritics (accented A -> A) so accented names group under
+    // their base letter instead of falling through to the "#" bucket.
+    const combiningDiacriticsStart = 0x0300;
+    const combiningDiacriticsEnd = 0x036f;
+    const letter = rawLetter
+      .normalize('NFD')
+      .split('')
+      .filter(ch => {
+        const code = ch.codePointAt(0) ?? 0;
+        return code < combiningDiacriticsStart || code > combiningDiacriticsEnd;
+      })
+      .join('');
     const key = /[A-Z]/.test(letter) ? letter : '#';
     if (!map.has(key)) map.set(key, []);
     map.get(key)!.push(c);
@@ -274,7 +287,7 @@ const ContactsScreen = () => {
         onEndReachedThreshold={0.3}
         ListEmptyComponent={renderEmpty}
         ListFooterComponent={renderFooter}
-        contentContainerStyle={tailwind.style('pb-4')}
+        contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px] flex-grow`)}
       />
     </Animated.View>
   );
