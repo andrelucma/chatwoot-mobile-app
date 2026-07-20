@@ -91,14 +91,14 @@ jobs:
         env:
           ASC_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
 
-      - name: Create 4.7.0 App Store version and attach latest build
+      - name: Create 4.7.1 App Store version and attach latest build
         run: |
           node <<'EOF'
           const crypto = require('crypto');
           const fs = require('fs');
           const https = require('https');
 
-          const VERSION_STRING = '4.7.0';
+          const VERSION_STRING = '4.7.1';
 
           function base64url(buf) {
             return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -196,19 +196,20 @@ jobs:
         env:
           ASC_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
 
-      - name: Set What's New text for 4.7.0
+      - name: Set What's New text for 4.7.1
         run: |
           node <<'EOF'
           const crypto = require('crypto');
           const fs = require('fs');
           const https = require('https');
 
-          const VERSION_STRING = '4.7.0';
+          const VERSION_STRING = '4.7.1';
           const WHATS_NEW_PT_BR = [
             'Nesta versão:',
             '',
-            '• Nova tela de Status dos Agentes (para administradores): veja quem está online, offline e o último acesso de cada um.',
-            '• Corrigido um problema que podia interromper o recebimento de notificações push após um tempo de uso.',
+            '• Preenchimento automático do nome do contato ao iniciar uma conversa com template do WhatsApp.',
+            '• Corrigida a lista de contatos: agora carrega todos os contatos corretamente, e a ordenação alfabética passou a considerar nomes com acento.',
+            '• Corrigido um problema em que trocar de conta não atualizava algumas telas imediatamente.',
             '• Ajustes de estabilidade e de interface.',
           ].join('\n');
 

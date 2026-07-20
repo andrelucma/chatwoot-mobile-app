@@ -192,13 +192,14 @@ jobs:
           PACKAGE_NAME: com.betelcode.app
           AAB_PATH: android/app/build/outputs/bundle/release/app-release.aab
           TRACK: alpha
-          VERSION_CODE: '4'
-          RELEASE_NAME: '4.7.0'
+          VERSION_CODE: '5'
+          RELEASE_NAME: '4.7.1'
           RELEASE_NOTES_PT_BR: |
             Nesta versão:
 
-            • Nova tela de Status dos Agentes (para administradores): veja quem está online, offline e o último acesso de cada um.
-            • Corrigido um problema que podia interromper o recebimento de notificações push após um tempo de uso.
+            • Preenchimento automático do nome do contato ao iniciar uma conversa com template do WhatsApp.
+            • Corrigida a lista de contatos: agora carrega todos os contatos corretamente, e a ordenação alfabética passou a considerar nomes com acento.
+            • Corrigido um problema em que trocar de conta não atualizava algumas telas imediatamente.
             • Ajustes de estabilidade e de interface.
 
       - name: Clean up secrets from disk
